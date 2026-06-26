@@ -150,13 +150,14 @@
             top: -0.2em;
         }
         
+        /* Online Status စာသားအတွက် Lottery Style ပြင်ဆင်မှု */
         .loading-status { 
             text-align: center; 
-            font-size: 1.3rem; 
-            color: #ff3333; 
-            margin-bottom: 20px; 
+            font-size: 0.95rem; 
+            margin-bottom: 25px; 
             font-weight: bold; 
-            letter-spacing: 2px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
         }
 
         #saveBtn {
@@ -187,6 +188,26 @@
             background: #333; color: white; border: none; padding: 10px 25px;
             font-weight: bold; cursor: pointer; font-size: 1rem; width: auto; height: auto;
         }
+
+        .voucher-footer-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+        }
+        .footer-total {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+        .footer-datetime {
+            font-size: 0.85rem;
+            color: #444;
+            white-space: nowrap;
+            letter-spacing: 0.2px;
+        }
     </style>
 </head>
 <body>
@@ -206,7 +227,7 @@
         <div class="title-lottery">~ LOTTERY ~</div>
     </div>
 
-    <div id="status" class="loading-status">...</div>
+    <div id="status" class="loading-status" style="color: #ff3333;">...</div>
     
     <div class="input-row-grid">
         <input type="number" id="num" placeholder="Number" oninput="if(this.value.length > 3) this.value = this.value.slice(0, 3);">
@@ -223,10 +244,12 @@
         <div style="font-size: 0.95rem; font-weight: bold; margin-bottom: 10px; color: #444;">~ LOTTERY ~</div>
         <svg id="barcode"></svg>
         <table id="ledgerList" style="width:100%; border-collapse: collapse; margin-top:20px; font-size: 1.3rem; font-weight: bold;"></table>
+        
         <div style="border-top: 2px dashed #777; margin: 20px 0;"></div>
-        <div style="display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1.1rem; gap: 10px;">
-            <div id="dateDisplay" style="text-align: left; font-size: 0.95rem; max-width: 60%; line-height: 1.4;"></div>
-            <div style="white-space: nowrap; text-align: right; font-size: 1.2rem;">Total: <span id="grandTotal">0</span></div>
+        
+        <div class="voucher-footer-center">
+            <div class="footer-total">Total: <span id="grandTotal">0</span></div>
+            <div id="dateDisplay" class="footer-datetime"></div>
         </div>
     </div>
     
@@ -255,8 +278,10 @@
     function initVoucherStyles() {
         const now = new Date();
         const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-        const dateStr = now.toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' });
-        document.getElementById('dateDisplay').innerHTML = `${timeStr}<br>${dateStr}`;
+        const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const dayStr = now.toLocaleDateString('en-US', { weekday: 'short' }); 
+        
+        document.getElementById('dateDisplay').innerHTML = `${timeStr} &nbsp; ${dayStr} &nbsp; ${dateStr}`;
         JsBarcode("#barcode", barcodeNumber, { format: "CODE128", width: 2, height: 40, displayValue: true });
     }
 
@@ -268,17 +293,15 @@
             closed2D = data.closed2D || [];
             closed3D = data.closed3D || [];
 
-            // စာသားကို "Online" ဟု ပြောင်းလဲပြီး အစိမ်းရောင် (#2ecc71) သို့ သတ်မှတ်ထားသည်
+            // စာသားကို ~ Online ~" ပုံစံဖြင့် စာလုံးအကွာအဝေးလှလှလေးနှင့် အစိမ်းရောင်ပြောင်းလဲခြင်း
             const statusEl = document.getElementById('status');
-            statusEl.innerText = "Online";
+            statusEl.innerText = "online";
             statusEl.style.color = "#2ecc71"; 
-            statusEl.style.letterSpacing = "1px";
         } catch (error) {
             console.error(error);
             const statusEl = document.getElementById('status');
-            statusEl.innerText = "Connection Error";
+            statusEl.innerText = "~ Connection Error ~";
             statusEl.style.color = "#ff3333"; 
-            statusEl.style.letterSpacing = "1px";
         }
     }
 
@@ -354,9 +377,10 @@
     function saveVoucher() {
         const now = new Date();
         const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-        const dateStr = now.toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const dayStr = now.toLocaleDateString('en-US', { weekday: 'short' });
         
-        document.getElementById('dateDisplay').innerHTML = `${timeStr}<br>${dateStr}`;
+        document.getElementById('dateDisplay').innerHTML = `${timeStr} &nbsp; ${dayStr} &nbsp; ${dateStr}`;
         JsBarcode("#barcode", barcodeNumber, { format: "CODE128", width: 2, height: 40, displayValue: true });
         
         html2canvas(document.getElementById('voucher')).then(canvas => {
