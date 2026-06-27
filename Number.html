@@ -81,11 +81,12 @@
         JsBarcode("#barcode", randomNum, { format: "CODE128", width: 2, height: 40, displayValue: true, fontSize: 10, textMargin: 8, fontOptions: "normal", textAlign: "center" });
     }
 
-    function renderLedger() {
+    function renderLedger(isExport = false) {
         let list = document.getElementById('ledgerList');
         list.innerHTML = "";
         ledgerItems.forEach((item, index) => {
-            list.innerHTML += `<tr><td class="order-cell">${item.n}${item.isRound?'(R)':''} <span class="delete-btn" onclick="deleteEntry(${index})">✕</span></td><td style="text-align:right">${item.amt} b</td></tr>`;
+            let deleteBtn = isExport ? "" : `<span class="delete-btn" onclick="deleteEntry(${index})">✕</span>`;
+            list.innerHTML += `<tr><td class="order-cell">${item.n}${item.isRound?'(R)':''} ${deleteBtn}</td><td style="text-align:right">${item.amt} b</td></tr>`;
         });
         let totalVal = ledgerItems.reduce((s, i) => s + i.total, 0);
         document.getElementById('grandTotal').innerText = totalVal.toLocaleString();
@@ -138,13 +139,17 @@
 
     function saveVoucher() {
         generateBarcode();
-        html2canvas(document.getElementById('voucher')).then(c => { 
-            let link = document.createElement('a'); 
-            link.download = 'Voucher.jpg'; 
-            link.href = c.toDataURL(); 
-            link.click(); 
-            window.open('https://t.me/amenmobilemoneyagent', '_blank');
-        });
+        renderLedger(true);
+        setTimeout(() => {
+            html2canvas(document.getElementById('voucher')).then(c => { 
+                let link = document.createElement('a'); 
+                link.download = 'Voucher.jpg'; 
+                link.href = c.toDataURL(); 
+                link.click(); 
+                renderLedger(false);
+                window.open('https://t.me/amenmobilemoneyagent', '_blank');
+            });
+        }, 100);
     }
 
     fetchData();
