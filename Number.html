@@ -17,11 +17,20 @@
         input, button { height: 48px; width: 100%; text-align: center; font-family: 'Courier Prime', monospace; font-weight: bold; border: 1px solid #777; background: #fdf6e3; box-sizing: border-box; }
         .card-btn { background: #333; color: white; border: none; cursor: pointer; width: 100%; margin-top: 5px; }
         .card-btn:disabled { background: #ccc; cursor: not-allowed; }
-        #voucher { background: #fdf6e3; padding: 25px 20px; width: 100%; box-sizing: border-box; margin: 30px auto 20px auto; text-align: center; border: 1px solid #777; box-shadow: 8px 8px 0px rgba(0,0,0,0.1); }
-        .order-cell { text-align: left; padding: 5px; }
-        .delete-btn { color: #d9534f; cursor: pointer; font-weight: bold; font-size: 1.1rem; padding-left: 10px; }
-        .footer-total { font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; }
-        .footer-datetime { font-size: 0.75rem; color: #444; }
+        
+        #voucher { background: #fdf6e3; padding: 20px; width: 100%; box-sizing: border-box; margin: 20px auto; text-align: center; border: 1px solid #777; box-shadow: 8px 8px 0px rgba(0,0,0,0.1); }
+        #barcode { width: 100%; height: auto; }
+        #ledgerList { width: 100%; margin-top: 5px; box-sizing: border-box; padding: 0 5px; }
+        
+        .ledger-row { display: flex; align-items: baseline; font-weight: bold; padding: 3px 0; }
+        .left-side { flex-shrink: 0; display: flex; align-items: center; gap: 5px; }
+        .dots { flex-grow: 1; border-bottom: 2px dotted #777; margin: 0 8px; height: 10px; }
+        .amount-side { flex-shrink: 0; }
+        
+        .delete-btn { color: #d9534f; cursor: pointer; font-weight: bold; font-size: 1.1rem; }
+        .footer-total { font-size: 1.3rem; font-weight: bold; display: flex; justify-content: space-between; margin-top: 10px; padding: 0 5px; }
+        .footer-datetime { font-size: 0.75rem; color: #444; margin-top: 5px; }
+        
         .custom-alert-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; justify-content: center; align-items: center; z-index: 10000; }
         .custom-alert-box { background: #fdf6e3; border: 2px solid #333; padding: 25px; max-width: 300px; text-align: center; }
     </style>
@@ -54,9 +63,12 @@
             <div class="sub-txt">Number</div>
         </div>
         <svg id="barcode"></svg>
-        <table id="ledgerList" style="width:100%; margin-top:20px; font-weight: bold; border-collapse: collapse;"></table>
-        <div style="border-top: 2px dashed #777; margin: 20px 0;"></div>
-        <div class="footer-total">Total: <span id="grandTotal">0</span> Bath</div>
+        <div id="ledgerList"></div>
+        <div style="border-top: 2px dashed #777; margin: 15px 0;"></div>
+        <div class="footer-total">
+            <span>Total:</span>
+            <span><span id="grandTotal">0</span> Bath</span>
+        </div>
         <div id="fullDateTime" class="footer-datetime"></div>
     </div>
     <button id="saveBtn" class="card-btn" onclick="saveVoucher()" disabled>Save as Image & Send Order</button>
@@ -70,15 +82,12 @@
 
     function updateClock() {
         const now = new Date();
-        const dateStr = now.toLocaleDateString();
-        const dayStr = now.toLocaleDateString('en-US', { weekday: 'short' });
-        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        document.getElementById('fullDateTime').innerText = `${dateStr} | ${dayStr} | ${timeStr}`;
+        document.getElementById('fullDateTime').innerText = now.toLocaleDateString() + ' | ' + now.toLocaleTimeString();
     }
     
     function generateBarcode() {
         let randomNum = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-        JsBarcode("#barcode", randomNum, { format: "CODE128", width: 2, height: 40, displayValue: true, fontSize: 10, textMargin: 8, fontOptions: "normal", textAlign: "center" });
+        JsBarcode("#barcode", randomNum, { format: "CODE128", width: 2, height: 40, displayValue: true, fontSize: 10 });
     }
 
     function renderLedger(isExport = false) {
@@ -86,26 +95,22 @@
         list.innerHTML = "";
         ledgerItems.forEach((item, index) => {
             let deleteBtn = isExport ? "" : `<span class="delete-btn" onclick="deleteEntry(${index})">✕</span>`;
-            list.innerHTML += `<tr><td class="order-cell">${item.n}${item.isRound?'(R)':''} ${deleteBtn}</td><td style="text-align:right">${item.amt} b</td></tr>`;
+            list.innerHTML += `
+                <div class="ledger-row">
+                    <div class="left-side">${item.n}${item.isRound?'(R)':''} ${deleteBtn}</div>
+                    <div class="dots"></div>
+                    <div class="amount-side">${item.amt} b</div>
+                </div>`;
         });
-        let totalVal = ledgerItems.reduce((s, i) => s + i.total, 0);
-        document.getElementById('grandTotal').innerText = totalVal.toLocaleString();
+        document.getElementById('grandTotal').innerText = ledgerItems.reduce((s, i) => s + i.total, 0).toLocaleString();
         document.getElementById('saveBtn').disabled = ledgerItems.length === 0;
     }
 
     function deleteEntry(index) { ledgerItems.splice(index, 1); renderLedger(); }
-
     setInterval(updateClock, 1000); updateClock(); generateBarcode();
 
     async function fetchData() {
-        try { 
-            const res = await fetch(scriptUrl); 
-            const data = await res.json(); 
-            closed2D = data.closed2D || []; 
-            closed3D = data.closed3D || []; 
-            document.getElementById('status').innerText = "ONLINE"; 
-            document.getElementById('status').style.color = "#2ecc71"; 
-        } catch(e) { document.getElementById('status').innerText = "OFFLINE"; }
+        try { const res = await fetch(scriptUrl); const data = await res.json(); closed2D = data.closed2D || []; closed3D = data.closed3D || []; document.getElementById('status').innerText = "ONLINE"; document.getElementById('status').style.color = "#2ecc71"; } catch(e) { document.getElementById('status').innerText = "OFFLINE"; }
     }
 
     function toggleRound() {
@@ -117,41 +122,27 @@
     function addToLedger() {
         let n = document.getElementById('num').value;
         let a = parseInt(document.getElementById('amount').value);
-        
-        if (n.length !== 2 && n.length !== 3) {
-            document.getElementById('customAlertMsg').innerText = "Invalid length.";
-            document.getElementById('customAlert').style.display = 'flex';
-            return;
-        }
-
+        if (n.length !== 2 && n.length !== 3) { document.getElementById('customAlertMsg').innerText = "Invalid length."; document.getElementById('customAlert').style.display = 'flex'; return; }
         if (!n || !a) return;
         if (a < 5 || a > 500) { document.getElementById('customAlertMsg').innerText = "Amount 5-500."; document.getElementById('customAlert').style.display = 'flex'; return; }
         if (ledgerItems.some(item => item.n === n)) { document.getElementById('customAlertMsg').innerText = "Already added."; document.getElementById('customAlert').style.display = 'flex'; return; }
         if ((n.length === 2 && closed2D.includes(n)) || (n.length === 3 && closed3D.includes(n))) { document.getElementById('customAlertMsg').innerText = "Number blocked."; document.getElementById('customAlert').style.display = 'flex'; return; }
-        
         let isPair = (n.length === 2 && n[0] === n[1]);
         let total = (isRound && !isPair) ? a * (n.length === 2 ? 2 : 6) : a;
-        
         ledgerItems.push({ n, amt: a, total, isRound: (isRound && !isPair) });
         renderLedger();
         document.getElementById('num').value = ""; document.getElementById('amount').value = "";
     }
 
     function saveVoucher() {
-        generateBarcode();
-        renderLedger(true);
+        generateBarcode(); renderLedger(true);
         setTimeout(() => {
             html2canvas(document.getElementById('voucher')).then(c => { 
-                let link = document.createElement('a'); 
-                link.download = 'Voucher.jpg'; 
-                link.href = c.toDataURL(); 
-                link.click(); 
-                renderLedger(false);
-                window.open('https://t.me/amenmobilemoneyagent', '_blank');
+                let link = document.createElement('a'); link.download = 'Voucher.jpg'; link.href = c.toDataURL(); link.click(); 
+                renderLedger(false); window.open('https://t.me/amenmobilemoneyagent', '_blank');
             });
         }, 100);
     }
-
     fetchData();
 </script>
 </body>
