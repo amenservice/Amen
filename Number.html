@@ -28,7 +28,6 @@
         
         .delete-btn { color: #d9534f; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
         
-        /* Total Section - Forced One Line */
         .footer-container { width: 80%; margin: 0 auto; white-space: nowrap; }
         .footer-total { font-size: 1.0rem; font-weight: bold; display: flex; justify-content: space-between; margin-top: 15px; border-top: 2px dashed #777; padding-top: 10px; }
         .footer-datetime { font-size: 0.65rem; color: #444; margin-top: 5px; text-align: center; }
@@ -129,9 +128,18 @@
         if (a < 5 || a > 500) { document.getElementById('customAlertMsg').innerText = "Amount 5-500."; document.getElementById('customAlert').style.display = 'flex'; return; }
         if (ledgerItems.some(item => item.n === n)) { document.getElementById('customAlertMsg').innerText = "Already added."; document.getElementById('customAlert').style.display = 'flex'; return; }
         if ((n.length === 2 && closed2D.includes(n)) || (n.length === 3 && closed3D.includes(n))) { document.getElementById('customAlertMsg').innerText = "Number blocked."; document.getElementById('customAlert').style.display = 'flex'; return; }
+        
+        let hasTwoDigitsSame = (n.length === 3 && (n[0] === n[1] || n[1] === n[2] || n[0] === n[2]));
+        let isTriple = (n.length === 3 && n[0] === n[1] && n[1] === n[2]);
         let isPair = (n.length === 2 && n[0] === n[1]);
-        let total = (isRound && !isPair) ? a * (n.length === 2 ? 2 : 6) : a;
-        ledgerItems.push({ n, amt: a, total, isRound: (isRound && !isPair) });
+        
+        let multiplier = 1;
+        if (isRound && !isPair && !isTriple) {
+            multiplier = (n.length === 2) ? 2 : (hasTwoDigitsSame ? 3 : 6);
+        }
+        
+        let total = a * multiplier;
+        ledgerItems.push({ n, amt: a, total, isRound: (isRound && !isPair && !isTriple) });
         renderLedger();
         document.getElementById('num').value = ""; document.getElementById('amount').value = "";
     }
