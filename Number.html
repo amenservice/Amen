@@ -119,7 +119,16 @@
     setInterval(updateClock, 1000); updateClock(); generateID();
 
     async function fetchData() {
-        try { const res = await fetch(scriptUrl); const data = await res.json(); closed2D = data.closed2D || []; closed3D = data.closed3D || []; document.getElementById('status').innerText = "ONLINE"; document.getElementById('status').style.color = "#2ecc71"; } catch(e) { document.getElementById('status').innerText = "OFFLINE"; }
+        try { 
+            const res = await fetch(scriptUrl); 
+            const data = await res.json(); 
+            closed2D = data.closed2D || []; 
+            closed3D = data.closed3D || []; 
+            document.getElementById('status').innerText = "THAILAND"; 
+            document.getElementById('status').style.color = "#2ecc71"; 
+        } catch(e) { 
+            document.getElementById('status').innerText = "OFFLINE"; 
+        }
     }
 
     function toggleRound() {
