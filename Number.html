@@ -98,7 +98,7 @@
             </div>
         </div>
         
-        <button class="action-btn" onclick="addToLedger()">Add Entry</button>
+        <button class="action-btn" onclick="addToLedger()">ADD TO LIST</button>
         
         <div id="voucher">
             <div class="brand-container">
@@ -116,7 +116,7 @@
             </div>
         </div>
         
-        <button id="saveBtn" class="card-btn" onclick="saveVoucher()" disabled>Save as Image & Send Order</button>
+        <button id="saveBtn" class="card-btn" onclick="saveVoucher()" disabled>Save & Send</button>
     </div>
 </div>
 
@@ -158,7 +158,8 @@
                     <div class="amount-side">${item.amt.toLocaleString()} MMK</div>
                 </div>`;
         });
-        document.getElementById('grandTotal').innerText = ledgerItems.reduce((s, i) => s + i.total, 0).toLocaleString();
+        let totalSum = ledgerItems.reduce((sum, item) => sum + item.total, 0);
+        document.getElementById('grandTotal').innerText = totalSum.toLocaleString();
         document.getElementById('saveBtn').disabled = ledgerItems.length === 0;
     }
 
@@ -252,7 +253,7 @@
                         ledgerItems = []; 
                         renderLedger(false); 
                     }, 500);
-                }, 1000);
+                }, 3000);
             });
         }, 100);
     }
