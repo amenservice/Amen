@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
     <title>ᗩᗰᕮᑎ Money</title>
     <meta name="description" content="">
     <meta property="og:type" content="website">
@@ -11,19 +10,14 @@
     <meta property="og:description" content="">
     <meta property="og:url" content="">
     <meta property="og:image" content="">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
-    
     <style>
-        /* အခြေခံ အရောင်နှင့် Theme သတ်မှတ်ချက်များ */
         :root { 
             --card-bg: #1c232d; --glow-blue: #00d2ff;
             --title-yellow: #ffff00; --title-green: #00ff00; --title-red: #ff0000;
             --messenger-clr: #0084ff; --viber-clr: #7360f2; --telegram-clr: #229ED9; --whatsapp-clr: #25D366;
-            --line-clr: #06C755;
-            --neon-border: #00d2ff;
-            --focus-border: #ffd700;
+            --line-clr: #06C755; --neon-border: #00d2ff; --focus-border: #ffd700;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { 
@@ -31,8 +25,6 @@
             height: 100dvh; background: #05070a; overflow: hidden;
             padding: env(safe-area-inset-top) 10px env(safe-area-inset-bottom) 10px;
         }
-        
-        /* ကတ်ပြား ပုံစံ ဒီဇိုင်း */
         .card { 
             width: 100%; max-width: 400px; height: 96%; max-height: 780px; 
             border-radius: 30px; padding: 2px; background: var(--glow-blue);
@@ -43,14 +35,7 @@
             display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;
             padding: calc(15px + env(safe-area-inset-top)) 15px calc(15px + env(safe-area-inset-bottom)) 15px; 
         }
-        
-        /* အပေါ်ပိုင်း ခေါင်းစဉ်ဧရိယာ */
-        .top-section {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        .top-section { width: 100%; display: flex; flex-direction: column; align-items: center; }
         .header { padding: 5px 10px; text-align: center; }
         .header-container { display: inline-block; text-align: left; position: relative; }
         .header h1 { 
@@ -68,50 +53,31 @@
         .t-mobile { color: var(--title-yellow); } 
         .t-money { color: var(--title-green); } 
         .t-agent { color: var(--title-red); }
-        
-        /* Live Status ပြသသည့်မီးလုံး */
         #status-light {
             font-size: 0.8rem; color: #cc66ff; margin: 10px auto 0 auto; background: rgba(0,0,0,0.3);
             padding: 4px 12px; border-radius: 12px; display: flex; align-items: center; gap: 6px;
         }
-        
-        /* အလယ်ပိုင်း (Tabs နှင့် Inputs) */
-        .middle-section {
-            width: 100%; flex-grow: 1; display: flex; flex-direction: column;
-            justify-content: center; padding: 15px 0;
-        }
+        .middle-section { width: 100%; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding: 15px 0; }
         .tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
         .tab { flex: 1; padding: 12px 5px; text-align: center; font-weight: 800; color: rgba(255,255,255,0.3); font-size: 1rem; cursor: pointer; }
         .tab.active { color: #ffd700; border-bottom: 3px solid #ffd700; }
         .market-container { padding: 0 10px; }
-        .content { display: none; } .content.active { display: block; }
-        
-        /* ဂဏန်းရိုက်ထည့်ရမည့် Input Box များ */
+        .content { display: none; } 
+        .content.active { display: block; }
         .input-box { 
             border-radius: 16px; background: rgba(0, 210, 255, 0.02); margin-bottom: 18px; 
             padding: 10px 16px; border: 2px solid var(--neon-border); 
             box-shadow: 0 0 10px rgba(0, 210, 255, 0.25), inset 0 0 5px rgba(0, 210, 255, 0.1);
             transition: all 0.2s ease-in-out;
         }
-        
         .input-box:focus-within, .input-box.highlighted {
             border-color: var(--focus-border);
             box-shadow: 0 0 16px rgba(255, 215, 0, 0.5), inset 0 0 8px rgba(255, 215, 0, 0.15);
             background: rgba(255, 215, 0, 0.01);
         }
-        
         input { width: 100%; border: none; background: transparent; font-size: 2.1rem; text-align: right; font-weight: 800; color: #fff; outline: none; }
         label { display: block; margin-bottom: 8px; font-weight: 800; color: #ffd700; font-size: 0.95rem; text-align: center; }
-        
-        /* အောက်ခြေ ဆိုရှယ်လင့်ခ်များနှင့် မူပိုင်ခွင့် */
-        .bottom-section { 
-            width: 100%; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 15px;
-            padding-bottom: 5px;
-        }
+        .bottom-section { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px; padding-bottom: 5px; }
         .social-container { display: flex; justify-content: space-evenly; align-items: center; width: 100%; }
         .social-icon { font-size: 2.2rem; color: #fff; opacity: 0.8; transition: 0.2s; }
         .social-icon:hover { opacity: 1; transform: scale(1.1); }
@@ -120,11 +86,7 @@
         .telegram:hover { color: var(--telegram-clr); }
         .whatsapp:hover { color: var(--whatsapp-clr); }
         .line:hover { color: var(--line-clr); }
-        
-        .footer-clean { 
-            font-size: 0.85rem; font-weight: bold; color: #fff; 
-            opacity: 0.5; display: block; text-align: center; width: 100%;
-        }
+        .footer-clean { font-size: 0.85rem; font-weight: bold; color: #fff; opacity: 0.5; display: block; text-align: center; width: 100%; }
     </style>
 </head>
 <body>
