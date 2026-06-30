@@ -41,7 +41,7 @@
         .card-inner { 
             background: var(--card-bg); border-radius: 28px; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;
-            padding: 0 0 20px 0; 
+            padding: calc(15px + env(safe-area-inset-top)) 15px calc(15px + env(safe-area-inset-bottom)) 15px; 
         }
         
         /* အပေါ်ပိုင်း ခေါင်းစဉ်ဧရိယာ */
@@ -50,12 +50,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: calc(75px + env(safe-area-inset-top)); 
         }
         .header { padding: 5px 10px; text-align: center; }
         .header-container { display: inline-block; text-align: left; position: relative; }
         .header h1 { 
-            font-size: 4.5rem; color: white; font-family: 'MedievalSharp'; 
+            font-size: 3.8rem; color: white; font-family: 'MedievalSharp'; 
             margin: 0; line-height: 1; display: flex; align-items: flex-start; position: relative;
         }
         .header h1 sup { 
@@ -72,19 +71,19 @@
         
         /* Live Status ပြသသည့်မီးလုံး */
         #status-light {
-            font-size: 0.8rem; color: #cc66ff; margin: 15px auto 5px auto; background: rgba(0,0,0,0.3);
+            font-size: 0.8rem; color: #cc66ff; margin: 10px auto 0 auto; background: rgba(0,0,0,0.3);
             padding: 4px 12px; border-radius: 12px; display: flex; align-items: center; gap: 6px;
         }
         
         /* အလယ်ပိုင်း (Tabs နှင့် Inputs) */
         .middle-section {
             width: 100%; flex-grow: 1; display: flex; flex-direction: column;
-            justify-content: center; padding: 20px 0;
+            justify-content: center; padding: 15px 0;
         }
         .tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
         .tab { flex: 1; padding: 12px 5px; text-align: center; font-weight: 800; color: rgba(255,255,255,0.3); font-size: 1rem; cursor: pointer; }
         .tab.active { color: #ffd700; border-bottom: 3px solid #ffd700; }
-        .market-container { padding: 0 20px; }
+        .market-container { padding: 0 10px; }
         .content { display: none; } .content.active { display: block; }
         
         /* ဂဏန်းရိုက်ထည့်ရမည့် Input Box များ */
@@ -95,7 +94,6 @@
             transition: all 0.2s ease-in-out;
         }
         
-        /* [ပြင်ဆင်ထားသည်] - ကလစ်နှိပ်ထားချိန် သို့မဟုတ် စာရိုက်ထားချိန်တွင် အကွက်များ ရွှေရောင်လင်းစေရန် */
         .input-box:focus-within, .input-box.highlighted {
             border-color: var(--focus-border);
             box-shadow: 0 0 16px rgba(255, 215, 0, 0.5), inset 0 0 8px rgba(255, 215, 0, 0.15);
@@ -106,8 +104,15 @@
         label { display: block; margin-bottom: 8px; font-weight: 800; color: #ffd700; font-size: 0.95rem; text-align: center; }
         
         /* အောက်ခြေ ဆိုရှယ်လင့်ခ်များနှင့် မူပိုင်ခွင့် */
-        .bottom-section { padding: 5px 5px 120px 5px; text-align: center; background: transparent; width: 100%; position: relative; }
-        .social-container { display: flex; justify-content: space-evenly; align-items: center; margin-bottom: 25px; width: 100%; }
+        .bottom-section { 
+            width: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 15px;
+            padding-bottom: 5px;
+        }
+        .social-container { display: flex; justify-content: space-evenly; align-items: center; width: 100%; }
         .social-icon { font-size: 2.2rem; color: #fff; opacity: 0.8; transition: 0.2s; }
         .social-icon:hover { opacity: 1; transform: scale(1.1); }
         .messenger:hover { color: var(--messenger-clr); }
@@ -117,8 +122,8 @@
         .line:hover { color: var(--line-clr); }
         
         .footer-clean { 
-            padding-top: 5px; font-size: 0.95rem; font-weight: bold; color: #fff; 
-            opacity: 0.5; display: block; position: absolute; bottom: 60px; width: 100%; left: 0;
+            font-size: 0.85rem; font-weight: bold; color: #fff; 
+            opacity: 0.5; display: block; text-align: center; width: 100%;
         }
     </style>
 </head>
@@ -177,12 +182,10 @@
 </div>
 
 <script>
-    // Google Sheet API URL နှင့် Default နှုန်းထားများ သတ်မှတ်ခြင်း
     const API_URL = 'https://script.google.com/macros/s/AKfycbzELl1tVZ-b5nDWUmqdb1j13Vo_SSlSYUdPhL0NO9zfmRC0mZmqA8X9BEmFHoIk-faTYQ/exec';
     let SETTINGS = { buyBase: 780, sellBase: 760 };
     let lastActiveInput = null;
 
-    // Google Sheet မှ Live Data ကို အချိန်နှင့်တပြေးညီ ဆွဲယူသည့် လုပ်ဆောင်ချက်
     async function syncData() {
         try {
             const res = await fetch(`${API_URL}?cache=${Date.now()}`);
@@ -215,7 +218,6 @@
     syncData();
     setInterval(syncData, 1000);
 
-    // ကိန်းဂဏန်းများအား ထောင်ဂဏန်းကော်မာ ( , ) ဖြတ်ပေးသည့် Function
     const format = (v, isTyping = false) => {
         if (!v && v !== 0) return "";
         let parts = v.toString().split(".");
@@ -226,7 +228,6 @@
     
     const raw = (v) => parseFloat(v.toString().replace(/,/g, "")) || 0;
 
-    // ငွေပမာဏအလိုက် Multiplier နှုန်းထားကို ညင်သာစွာ ပြောင်းလဲပေးသည့် စနစ်
     function getSmoothMultiplier(mmkAmount, isBuyTab) {
         let percentage = 1.0;
         if (mmkAmount <= 100000) {
@@ -241,7 +242,6 @@
         return isBuyTab ? (1.0 + rateFactor) : (1.0 - rateFactor);
     }
 
-    // [အသစ်ထည့်သွင်းသည်] - လက်ရှိ Tab ထဲက အကွက်နှစ်ကွက်လုံးကို တစ်ပြိုင်နက် မီးလင်း/မှိတ် စိမံပေးမည့် Function
     function updateGlow(inputEl, hasValue) {
         let parentContent = inputEl.closest('.content');
         if (parentContent) {
@@ -256,7 +256,6 @@
         }
     }
     
-    // ၁။ ဘတ်ရိုက်ထည့်လျှင် ကျပ်ငွေ တွက်ချက်ပေးသည့် Function
     function handleTHBInput(inputEl, outputId, baseRate, isBuy) {
         lastActiveInput = inputEl;
         let thb = raw(inputEl.value); 
@@ -264,10 +263,10 @@
         
         if (!inputEl.value) {
             document.getElementById(outputId).value = "";
-            updateGlow(inputEl, false); // ဂဏန်းမရှိရင် မီးမှိတ်မယ်
+            updateGlow(inputEl, false);
             return;
         }
-        updateGlow(inputEl, true); // ဂဏန်းရှိရင် နှစ်ကွက်လုံး မီးလင်းမယ်
+        updateGlow(inputEl, true);
         
         let roughMMK = (thb / baseRate) * 100000;
         let multiplier = getSmoothMultiplier(roughMMK, isBuy);
@@ -277,7 +276,6 @@
         document.getElementById(outputId).value = format(Math.floor(calculatedMMK));
     }
 
-    // ၂။ ကျပ်ရိုက်ထည့်လျှင် ဘတ်ငွေ တွက်ချက်ပေးသည့် Function
     function handleMMKInput(inputEl, outputId, baseRate, isBuy) {
         lastActiveInput = inputEl;
         let mmk = raw(inputEl.value); 
@@ -285,10 +283,10 @@
         
         if (!inputEl.value) {
             document.getElementById(outputId).value = "";
-            updateGlow(inputEl, false); // ဂဏန်းမရှိရင် မီးမှိတ်မယ်
+            updateGlow(inputEl, false);
             return;
         }
-        updateGlow(inputEl, true); // ဂဏန်းရှိရင် နှစ်ကွက်လုံး မီးလင်းမယ်
+        updateGlow(inputEl, true);
         
         let baseTHB = (mmk / 100000) * baseRate;
         let multiplier = getSmoothMultiplier(mmk, isBuy);
@@ -297,17 +295,15 @@
         document.getElementById(outputId).value = format(parseFloat(finalTHB.toFixed(2)));
     }
 
-    // Event Listeners ချိတ်ဆက်ခြင်း
     document.getElementById('thbBuy').oninput = function() { handleTHBInput(this, 'mmkBuy', SETTINGS.buyBase, true); };
     document.getElementById('mmkBuy').oninput = function() { handleMMKInput(this, 'thbBuy', SETTINGS.buyBase, true); };
     document.getElementById('mmkSell').oninput = function() { handleMMKInput(this, 'thbSell', SETTINGS.sellBase, false); };
     document.getElementById('thbSell').oninput = function() { handleTHBInput(this, 'mmkSell', SETTINGS.sellBase, false); };
 
-    // Tab များ အကူးအပြောင်း ပြုလုပ်ခြင်း
     function openTab(e, name) {
         document.querySelectorAll('.content').forEach(c => {
             c.classList.remove('active');
-            c.querySelectorAll('.input-box').forEach(b => b.classList.remove('highlighted')); // Tab ပြောင်းရင် မီးဟောင်းတွေမှိတ်မယ်
+            c.querySelectorAll('.input-box').forEach(b => b.classList.remove('highlighted'));
         });
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.getElementById(name).classList.add('active');
