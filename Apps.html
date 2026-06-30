@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ᗩᗰᕮᑎ Apps</title>
+    
+    <!-- Fonts & Icons & Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        :root { 
+            --card-bg: #1c232d; 
+            --glow-blue: #00d2ff;
+            --title-yellow: #ffff00; 
+            --title-green: #00ff00; 
+            --title-red: #ff0000;
+            --title-purple: #b366ff;
+            --messenger-clr: #0084ff; 
+            --viber-clr: #7360f2; 
+            --telegram-clr: #229ED9; 
+            --whatsapp-clr: #25D366;
+            --line-clr: #06C755; 
+            --neon-border: #00d2ff; 
+            --focus-border: #ffd700;
+            --input-focus-bg: #131922;
+        }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: #05070a; 
+            overflow: hidden; 
+            height: 100dvh;
+            width: 100vw;
+        }
+
+        /* Swipe Container Styles */
+        .swipe-container {
+            display: flex;
+            width: 200vw; 
+            height: 100dvh;
+            transition: transform 0.3s ease-out;
+            touch-action: pan-y; 
+        }
+
+        .screen {
+            width: 100vw;
+            height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: env(safe-area-inset-top) 10px env(safe-area-inset-bottom) 10px;
+        }
+
+        /* Shared Card Styles */
+        .card { 
+            width: 100%; 
+            max-width: 420px; 
+            height: 96%; 
+            max-height: 780px; 
+            border-radius: 30px; 
+            padding: 2px; 
+            background: var(--glow-blue);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.2); 
+            display: flex;
+        }
+        .card-inner { 
+            background: var(--card-bg); 
+            border-radius: 28px; 
+            width: 100%; 
+            height: 100%;
+            display: flex; 
+            flex-direction: column; 
+            overflow-y: auto; 
+            padding: calc(15px + env(safe-area-inset-top)) 15px calc(15px + env(safe-area-inset-bottom)) 15px; 
+        }
+
+        /* Indicator Dots */
+        .nav-dots {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transition: 0.3s;
+        }
+        .dot.active {
+            background: var(--glow-blue);
+            box-shadow: 0 0 8px var(--glow-blue);
+            width: 20px;
+            border-radius: 5px;
+        }
+
+        /* ================= MONEY APP STYLES ================= */
+        .money-app .card-inner { justify-content: space-evenly; }
+        .money-top-section { width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .money-middle-section { width: 100%; display: flex; flex-direction: column; justify-content: center; padding: 10px 0; }
+        .money-bottom-section { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 18px; padding-bottom: 5px; }
+        
+        .header-container { display: inline-block; text-align: left; position: relative; margin: 0 auto;}
+        .money-app h1 { font-size: 3.8rem; color: white; font-family: 'MedievalSharp'; margin: 0; line-height: 1; display: flex; align-items: flex-start; }
+        .money-app h1 sup { font-size: 0.45em; font-weight: normal; font-family: sans-serif; color: #ffffff; margin-left: 4px; position: relative; top: 0.18em; }
+        .agent-title { font-size: 0.95rem; margin-top: 6px; font-weight: bold; width: 100%; display: flex; justify-content: space-between; }
+        .t-mobile { color: var(--title-yellow); } .t-money { color: var(--title-green); } .t-agent { color: var(--title-red); }
+        
+        #status-light { font-size: 0.8rem; color: #cc66ff; margin: 10px auto 0 auto; background: rgba(0,0,0,0.3); padding: 4px 12px; border-radius: 12px; display: flex; align-items: center; gap: 6px; }
+        
+        .tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 30px;}
+        .tab { flex: 1; padding: 12px 5px; text-align: center; font-weight: 800; color: rgba(255,255,255,0.3); font-size: 1rem; cursor: pointer; }
+        .tab.active { color: #ffd700; border-bottom: 3px solid #ffd700; }
+        
+        .content { display: none; } .content.active { display: block; }
+        .money-input-box { border-radius: 16px; background: rgba(0, 210, 255, 0.02); margin-bottom: 25px; padding: 12px 16px; border: 2px solid var(--neon-border); transition: all 0.2s; }
+        .money-input-box:focus-within, .money-input-box.highlighted { border-color: var(--focus-border); box-shadow: 0 0 16px rgba(255, 215, 0, 0.5); background: rgba(255, 215, 0, 0.01); }
+        .money-input-box input { width: 100%; border: none; background: transparent; font-size: 2.1rem; text-align: right; font-weight: 800; color: #fff; outline: none; }
+        .money-app label { display: block; margin-bottom: 12px; font-weight: 800; color: #ffd700; font-size: 1rem; text-align: center; }
+        
+        .social-container { display: flex; justify-content: space-evenly; align-items: center; width: 100%; }
+        .social-icon { font-size: 2.2rem; color: #fff; opacity: 0.8; transition: 0.2s; }
+        .social-icon:hover { opacity: 1; transform: scale(1.1); }
+        .messenger:hover { color: var(--messenger-clr); } .viber:hover { color: var(--viber-clr); } .telegram:hover { color: var(--telegram-clr); } .whatsapp:hover { color: var(--whatsapp-clr); } .line:hover { color: var(--line-clr); }
+        .footer-clean { font-size: 0.85rem; font-weight: bold; color: #fff; opacity: 0.5; display: block; text-align: center; width: 100%; }
+
+        /* ================= NUMBER APP STYLES ================= */
+        .number-app { font-family: 'Courier Prime', monospace; align-items: center;}
+        .brand-container { text-align: center; margin-bottom: 12px; width: 100%;}
+        .brand-name { font-size: 3.5rem; color: white; font-family: 'MedievalSharp', sans-serif; line-height: 1; display: inline-flex; position: relative; }
+        .brand-name sup { font-size: 0.45em; font-weight: normal; font-family: sans-serif; color: #ffffff; margin-left: 4px; position: relative; top: 0.15em; }
+        .sub-txt { font-size: 0.9rem; font-weight: bold; letter-spacing: 4px; color: #ffd700; text-transform: uppercase; margin-top: 5px; }
+        
+        #num-status { text-align: center; font-size: 0.85rem; margin: 0 auto 12px auto; color: var(--title-purple); font-weight: bold; background: rgba(0, 0, 0, 0.3); padding: 4px 14px; border-radius: 12px; display: inline-block; }
+        
+        .input-row-grid { display: grid; grid-template-columns: 1.2fr 1fr 1.2fr; gap: 8px; margin-bottom: 12px; width: 100%; }
+        .num-input-box { border-radius: 15px; background: var(--input-focus-bg); padding: 5px 8px; border: 2px solid var(--glow-blue); display: flex; align-items: center; }
+        .num-input-box input { width: 100%; border: none; background: transparent; font-size: 1.15rem; text-align: center; font-weight: bold; color: #fff; outline: none; font-family: 'Courier Prime', monospace; }
+        
+        button.action-btn { height: 50px; width: 100%; border-radius: 15px; font-family: 'Courier Prime', monospace; font-weight: bold; font-size: 1.1rem; border: 2px solid var(--glow-blue); background: rgba(0, 210, 255, 0.05); color: var(--glow-blue); cursor: pointer; transition: 0.2s; text-transform: uppercase; }
+        button.action-btn:active { background: var(--glow-blue); color: #05070a; }
+        #roundBtn { border-radius: 15px; font-family: 'Courier Prime', monospace; font-weight: bold; font-size: 0.95rem; border: 2px solid rgba(0, 210, 255, 0.5); background: var(--input-focus-bg); color: #fff; }
+        
+        .card-btn { height: 50px; background: transparent; color: var(--glow-blue); font-weight: 800; border: 2px solid var(--glow-blue); border-radius: 15px; width: 100%; margin-top: auto; font-family: 'Courier Prime', monospace; font-size: 1.05rem; text-transform: uppercase; transition: 0.2s; }
+        .card-btn:not(:disabled):active { background: var(--glow-blue); color: #05070a; }
+        .card-btn:disabled { background: #151a22; color: #444; border-color: #2c3545; }
+        
+        #voucher { background: #121820; padding: 15px; width: 100%; border-radius: 20px; margin: 15px auto; text-align: center; border: 2px solid var(--glow-blue); color: #fff; flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto;}
+        #voucher .brand-name { font-size: 2.8rem; }
+        .voucher-id { font-weight: bold; font-size: 1.1rem; margin: 12px auto; border: 1.5px dashed var(--glow-blue); padding: 8px; width: 95%; color: var(--glow-blue); border-radius: 10px; }
+        
+        #ledgerList { width: 95%; margin: 10px auto; flex-grow: 1; }
+        .ledger-row { display: flex; align-items: baseline; font-weight: bold; padding: 6px 0; font-size: 0.95rem; color: #e0e0e0; }
+        .left-side { flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
+        .dots { flex-grow: 1; border-bottom: 1.5px dotted rgba(255,255,255,0.2); margin: 0 8px; height: 10px; }
+        .amount-side { flex-shrink: 0; color: #ffffff; }
+        .delete-btn { color: var(--title-red); cursor: pointer; font-weight: bold; font-size: 1rem; margin-left: 5px; }
+        
+        .footer-total { font-size: 1.1rem; font-weight: bold; display: flex; justify-content: space-between; margin-top: 15px; border-top: 2px dashed rgba(255,255,255,0.2); padding-top: 12px; }
+        .footer-datetime { font-size: 0.8rem; color: #aaa; margin-top: 10px; text-align: center; font-weight: bold; }
+        
+        /* Custom Alert */
+        .custom-alert-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(0,0,0,0.75); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(3px); }
+        .custom-alert-box { background: var(--card-bg); border: 2px solid var(--glow-blue); border-radius: 20px; padding: 30px 25px; max-width: 320px; width: 85%; text-align: center; box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); }
+        .custom-alert-box button { height: 45px; width: 100%; background: var(--glow-blue); border: none; border-radius: 12px; color: #05070a; font-weight: bold; font-family: 'Courier Prime', monospace; font-size: 1rem; }
+    </style>
+</head>
+<body>
+
+<!-- Swipeable Container -->
+<div class="swipe-container" id="swipeContainer">
+    
+    <!-- ================= SCREEN 1: MONEY APP ================= -->
+    <div class="screen">
+        <div class="card money-app">
+            <div class="card-inner">
+                
+                <!-- TOP SECTION -->
+                <div class="money-top-section">
+                    <div class="header-container">
+                        <h1>ᗩᗰᕮᑎ<sup>®</sup></h1>
+                        <div class="agent-title">
+                            <span class="t-mobile">M</span><span class="t-mobile">o</span><span class="t-mobile">b</span><span class="t-mobile">i</span><span class="t-mobile">l</span><span class="t-mobile">e</span>
+                            <span class="t-money">M</span><span class="t-money">o</span><span class="t-money">n</span><span class="t-money">e</span><span class="t-money">y</span>
+                            <span class="t-agent">A</span><span class="t-agent">g</span><span class="t-agent">e</span><span class="t-agent">n</span><span class="t-agent">t</span>
+                        </div>
+                    </div>
+                    <div id="status-light">Loading</div>
+                </div>
+                
+                <!-- MIDDLE SECTION -->
+                <div class="money-middle-section">
+                    <div class="tabs">
+                        <div class="tab active" onclick="openTab(event, 'buy')">ဘတ်ပေး_ကျပ်ယူ</div>
+                        <div class="tab" onclick="openTab(event, 'sell')">ကျပ်ပေး_ဘတ်ယူ</div>
+                    </div>
+
+                    <div style="padding: 0 10px;">
+                        <div id="buy" class="content active">
+                            <label>ဘတ်ငွေပမာဏ {THB}</label>
+                            <div class="money-input-box"><input type="text" id="thbBuy" placeholder="0" inputmode="decimal"></div>
+                            <label>ကျပ်ငွေပမာဏ {MMK}</label>
+                            <div class="money-input-box"><input type="text" id="mmkBuy" placeholder="0" inputmode="decimal"></div>
+                        </div>
+                        
+                        <div id="sell" class="content">
+                            <label>ကျပ်ငွေပမာဏ {MMK}</label>
+                            <div class="money-input-box"><input type="text" id="mmkSell" placeholder="0" inputmode="decimal"></div>
+                            <label>ဘတ်ငွေပမာဏ {THB}</label>
+                            <div class="money-input-box"><input type="text" id="thbSell" placeholder="0" inputmode="decimal"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTTOM SECTION -->
+                <div class="money-bottom-section">
+                    <div class="social-container">
+                        <a href="https://m.me/MobileMoneyAgent" class="social-icon messenger"><i class="fa-brands fa-facebook-messenger"></i></a>
+                        <a href="viber://chat?number=%2B66947841411" class="social-icon viber"><i class="fa-brands fa-viber"></i></a>
+                        <a href="https://t.me/amenmobilemoneyagent" class="social-icon telegram"><i class="fa-brands fa-telegram"></i></a>
+                        <a href="https://api.whatsapp.com/send?phone=66947841411" class="social-icon whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="https://line.me/ti/p/~mobilemoneyagent" class="social-icon line"><i class="fa-brands fa-line"></i></a>
+                    </div>
+                    <span class="footer-clean">Mobile Money Agent © 2026</span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= SCREEN 2: NUMBER APP ================= -->
+    <div class="screen">
+        <div class="card number-app">
+            <div class="card-inner">
+                <div class="brand-container">
+                    <h1 class="brand-name">ᗩᗰᕮᑎ<sup>®</sup></h1>
+                    <div class="sub-txt">~ NUMBER ~</div>
+                </div>
+                
+                <div id="num-status">Loading</div>
+                
+                <div class="input-row-grid">
+                    <div class="num-input-box"><input type="number" id="num" placeholder="Number"></div>
+                    <button id="roundBtn" onclick="toggleRound()">Round</button>
+                    <div class="num-input-box"><input type="number" id="amount" placeholder="Amount"></div>
+                </div>
+                
+                <button class="action-btn" onclick="addToLedger()">ADD TO LIST</button>
+                
+                <div id="voucher">
+                    <div class="brand-container">
+                        <h1 class="brand-name">ᗩᗰᕮᑎ<sup>®</sup></h1>
+                        <div class="sub-txt">~ NUMBER ~</div>
+                    </div>
+                    <div class="voucher-id" id="vID">ID: --------</div>
+                    <div id="ledgerList"></div>
+                    <div style="width: 95%; margin: auto auto 0 auto;">
+                        <div class="footer-total">
+                            <span>Total:</span>
+                            <span><span id="grandTotal">0</span> THB</span>
+                        </div>
+                        <div id="fullDateTime" class="footer-datetime"></div>
+                    </div>
+                </div>
+                
+                <button id="saveBtn" class="card-btn" onclick="saveVoucher()" disabled>Save & Send</button>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<!-- Indicator Dots -->
+<div class="nav-dots">
+    <div class="dot active" id="dot-0"></div>
+    <div class="dot" id="dot-1"></div>
+</div>
+
+<!-- Custom Alert -->
+<div id="customAlert" class="custom-alert-overlay">
+    <div class="custom-alert-box">
+        <div id="customAlertMsg" style="font-weight:bold; margin-bottom: 25px; line-height: 1.5; color: #fff;"></div>
+        <button onclick="document.getElementById('customAlert').style.display='none'">OK</button>
+    </div>
+</div>
+
+<script>
+    /* ================= SWIPE LOGIC ================= */
+    const swipeContainer = document.getElementById('swipeContainer');
+    let startX = 0;
+    let endX = 0;
+    let currentScreen = 0;
+
+    function updateScreen(index) {
+        currentScreen = index;
+        swipeContainer.style.transform = `translateX(-${index * 100}vw)`;
+        document.getElementById('dot-0').classList.toggle('active', index === 0);
+        document.getElementById('dot-1').classList.toggle('active', index === 1);
+    }
+
+    swipeContainer.addEventListener('touchstart', e => {
+        startX = e.changedTouches[0].screenX;
+    });
+
+    swipeContainer.addEventListener('touchend', e => {
+        endX = e.changedTouches[0].screenX;
+        handleSwipe();
+    });
+
+    function handleSwipe() {
+        const threshold = 50; 
+        if (startX - endX > threshold && currentScreen === 0) {
+            updateScreen(1); 
+        } else if (endX - startX > threshold && currentScreen === 1) {
+            updateScreen(0); 
+        }
+    }
+
+    /* ================= MONEY APP JS ================= */
+    const MONEY_API = 'https://script.google.com/macros/s/AKfycbzELl1tVZ-b5nDWUmqdb1j13Vo_SSlSYUdPhL0NO9zfmRC0mZmqA8X9BEmFHoIk-faTYQ/exec';
+    let SETTINGS = { buyBase: 780, sellBase: 760 };
+    let lastActiveInput = null;
+
+    async function syncMoneyData() {
+        try {
+            const res = await fetch(`${MONEY_API}?cache=${Date.now()}`);
+            const data = await res.json();
+            let isRateChanged = false;
+            if (data.buyBase && parseFloat(data.buyBase) !== SETTINGS.buyBase) { SETTINGS.buyBase = parseFloat(data.buyBase); isRateChanged = true; }
+            if (data.sellBase && parseFloat(data.sellBase) !== SETTINGS.sellBase) { SETTINGS.sellBase = parseFloat(data.sellBase); isRateChanged = true; }
+            
+            const statusLight = document.getElementById('status-light');
+            statusLight.innerHTML = 'Live'; statusLight.style.color = '#00d2ff';
+            if (isRateChanged && lastActiveInput) { lastActiveInput.dispatchEvent(new Event('input')); }
+        } catch (e) {
+            const statusLight = document.getElementById('status-light');
+            statusLight.innerHTML = 'Offline'; statusLight.style.color = '#ff4d4d';
+        }
+    }
+    syncMoneyData(); setInterval(syncMoneyData, 1000);
+
+    const format = (v, isTyping = false) => {
+        if (!v && v !== 0) return "";
+        let parts = v.toString().split(".");
+        parts[0] = parts[0].replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        if (parts.length > 1) return parts[0] + "." + parts[1];
+        return parts[0] + (isTyping && v.toString().includes(".") ? "." : "");
+    };
+    const raw = (v) => parseFloat(v.toString().replace(/,/g, "")) || 0;
+
+    function getSmoothMultiplier(mmkAmount, isBuyTab) {
+        let percentage = 1.0;
+        if (mmkAmount <= 100000) percentage = 1.0;
+        else if (mmkAmount >= 150000000) percentage = 0.25;
+        else {
+            let ratio = (mmkAmount - 100000) / (150000000 - 100000);
+            percentage = 1.0 - (ratio * (1.0 - 0.25));
+        }
+        return isBuyTab ? (1.0 + (percentage/100)) : (1.0 - (percentage/100));
+    }
+
+    function updateGlow(inputEl, hasValue) {
+        let parentContent = inputEl.closest('.content');
+        if (parentContent) {
+            parentContent.querySelectorAll('.money-input-box').forEach(box => {
+                hasValue ? box.classList.add('highlighted') : box.classList.remove('highlighted');
+            });
+        }
+    }
+    
+    function handleTHBInput(inputEl, outputId, baseRate, isBuy) {
+        lastActiveInput = inputEl; let thb = raw(inputEl.value); 
+        inputEl.value = format(inputEl.value, true);
+        if (!inputEl.value) { document.getElementById(outputId).value = ""; updateGlow(inputEl, false); return; }
+        updateGlow(inputEl, true);
+        let roughMMK = (thb / baseRate) * 100000;
+        let baseTHB = thb / getSmoothMultiplier(roughMMK, isBuy);
+        document.getElementById(outputId).value = format(Math.floor((baseTHB / baseRate) * 100000));
+    }
+
+    function handleMMKInput(inputEl, outputId, baseRate, isBuy) {
+        lastActiveInput = inputEl; let mmk = raw(inputEl.value); 
+        inputEl.value = format(inputEl.value, true);
+        if (!inputEl.value) { document.getElementById(outputId).value = ""; updateGlow(inputEl, false); return; }
+        updateGlow(inputEl, true);
+        let baseTHB = (mmk / 100000) * baseRate;
+        document.getElementById(outputId).value = format(parseFloat((baseTHB * getSmoothMultiplier(mmk, isBuy)).toFixed(2)));
+    }
+
+    document.getElementById('thbBuy').oninput = function() { handleTHBInput(this, 'mmkBuy', SETTINGS.buyBase, true); };
+    document.getElementById('mmkBuy').oninput = function() { handleMMKInput(this, 'thbBuy', SETTINGS.buyBase, true); };
+    document.getElementById('mmkSell').oninput = function() { handleMMKInput(this, 'thbSell', SETTINGS.sellBase, false); };
+    document.getElementById('thbSell').oninput = function() { handleTHBInput(this, 'mmkSell', SETTINGS.sellBase, false); };
+
+    function openTab(e, name) {
+        document.querySelectorAll('.content').forEach(c => { c.classList.remove('active'); c.querySelectorAll('.money-input-box').forEach(b => b.classList.remove('highlighted')); });
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(name).classList.add('active');
+        e.currentTarget.classList.add('active');
+        lastActiveInput = null;
+    }
+
+    /* ================= NUMBER APP JS ================= */
+    const NUM_API = 'https://script.google.com/macros/s/AKfycbw9MFGDcEHAiuN_OuvOW9gA0In1GbHCOXFn61SSUTNrRB55biewL55d5W2IFfsolMCA/exec';
+    let isRound = false; let ledgerItems = []; let closed2D = [], closed3D = []; let currentVoucherID = "";
+
+    function generateID() {
+        let timestamp = Date.now().toString();
+        let randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+        currentVoucherID = timestamp.slice(-6) + randomNum;
+        document.getElementById('vID').innerText = "ID: " + currentVoucherID;
+    }
+
+    function updateClock() {
+        const now = new Date();
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        document.getElementById('fullDateTime').innerText = 
+            `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')} ${days[now.getDay()]},${String(now.getDate()).padStart(2, '0')},${String(now.getMonth() + 1).padStart(2, '0')},${now.getFullYear()}`;
+    }
+
+    function renderLedger(isExport = false) {
+        let list = document.getElementById('ledgerList'); list.innerHTML = "";
+        ledgerItems.forEach((item, index) => {
+            let deleteBtn = isExport ? "" : `<span class="delete-btn" onclick="deleteEntry(${index})">✕</span>`;
+            list.innerHTML += `<div class="ledger-row"><div class="left-side">${item.n}${item.isRound?'(R)':''} ${deleteBtn}</div><div class="dots"></div><div class="amount-side">${item.amt.toLocaleString()} THB</div></div>`;
+        });
+        document.getElementById('grandTotal').innerText = ledgerItems.reduce((sum, item) => sum + item.total, 0).toLocaleString();
+        document.getElementById('saveBtn').disabled = ledgerItems.length === 0;
+    }
+
+    function deleteEntry(index) { ledgerItems.splice(index, 1); renderLedger(); }
+    setInterval(updateClock, 1000); updateClock(); generateID();
+
+    async function fetchNumData() {
+        try { 
+            const res = await fetch(NUM_API); const data = await res.json(); 
+            closed2D = data.closed2D || []; closed3D = data.closed3D || []; 
+            document.getElementById('num-status').innerText = "Live"; document.getElementById('num-status').style.color = "#00ff00"; 
+        } catch(e) { 
+            document.getElementById('num-status').innerText = "OFFLINE"; document.getElementById('num-status').style.color = "#ff4d4d"; 
+        }
+    }
+
+    function toggleRound() {
+        isRound = !isRound;
+        document.getElementById('roundBtn').style.background = isRound ? 'var(--glow-blue)' : 'var(--input-focus-bg)';
+        document.getElementById('roundBtn').style.color = isRound ? '#05070a' : '#fff';
+        document.getElementById('roundBtn').style.borderColor = isRound ? 'var(--glow-blue)' : 'rgba(0, 210, 255, 0.5)';
+    }
+
+    function getAllPermutations(n) {
+        if (n.length < 2) return [n]; let perms = [];
+        for (let i = 0; i < n.length; i++) {
+            let char = n[i]; let remaining = n.slice(0, i) + n.slice(i + 1);
+            for (let subPerm of getAllPermutations(remaining)) perms.push(char + subPerm);
+        }
+        return [...new Set(perms)];
+    }
+
+    function showAlert(msg) {
+        document.getElementById('customAlertMsg').innerText = msg;
+        document.getElementById('customAlert').style.display = 'flex';
+    }
+
+    function addToLedger() {
+        let n = document.getElementById('num').value; let a = parseInt(document.getElementById('amount').value);
+        let permutations = getAllPermutations(n);
+        
+        if (ledgerItems.find(item => permutations.includes(item.n) || (isRound && item.isRound && permutations.some(p => p === item.n)))) 
+            return showAlert("Number or its permutation already exists."); 
+
+        if (n.length !== 2 && n.length !== 3) return showAlert("Invalid length."); 
+        if (!n || !a) return;
+        if (a < 5 || a > 500) return showAlert("Amount 5 - 500"); 
+        if ((n.length === 2 && closed2D.includes(n)) || (n.length === 3 && closed3D.includes(n))) return showAlert("Number blocked."); 
+        
+        let hasTwoDigitsSame = (n.length === 3 && (n[0] === n[1] || n[1] === n[2] || n[0] === n[2]));
+        let isTriple = (n.length === 3 && n[0] === n[1] && n[1] === n[2]);
+        let isPair = (n.length === 2 && n[0] === n[1]);
+        
+        let multiplier = 1;
+        if (isRound && !isPair && !isTriple) multiplier = (n.length === 2) ? 2 : (hasTwoDigitsSame ? 3 : 6);
+        
+        ledgerItems.push({ n, amt: a, total: a * multiplier, isRound: (isRound && !isPair && !isTriple) });
+        renderLedger(); document.getElementById('num').value = ""; document.getElementById('amount').value = "";
+    }
+
+    function saveVoucher() {
+        generateID(); renderLedger(true); 
+        setTimeout(() => {
+            html2canvas(document.getElementById('voucher'), { scale: 2, useCORS: true, backgroundColor: null }).then(canvas => { 
+                let link = document.createElement('a'); 
+                link.download = 'Voucher_' + currentVoucherID + '.png'; 
+                link.href = canvas.toDataURL('image/png'); 
+                link.click(); 
+                
+                setTimeout(() => {
+                    window.open('https://t.me/amenmobilemoneyagent', '_blank');
+                }, 500);
+
+                ledgerItems = []; 
+                renderLedger(false); 
+            });
+        }, 100);
+    }
+    fetchNumData();
+</script>
+</body>
+</html>
