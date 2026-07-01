@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ᗩᗰᕮᑎ Money</title>
+    <title>ᗩᗰᕮᑎ Money App</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
@@ -123,23 +123,35 @@
         .agent-title .clr-agent { color: #dc2626; }
         
         #status-light { 
-            font-size: 0.82rem; 
-            color: #0d9488; 
-            margin: 18px auto; 
-            background: #edf2f7; 
+            margin: 12px auto; 
+            background: #eef2f7; 
             border-radius: 16px; 
-            padding: 8px 24px; 
+            padding: 8px 18px; 
             display: flex; 
             flex-direction: column;
             align-items: center; 
             justify-content: center;
-            gap: 2px;
-            font-weight: bold; 
-            letter-spacing: 1px; 
-            box-shadow: 3px 3px 6px #d1d9e6, inset -2px -2px 5px #ffffff; 
+            width: fit-content;
+            min-width: 180px;
+            box-shadow: inset 3px 3px 6px #cbd5e1, inset -3px -3px 6px #ffffff; 
             font-family: 'Courier Prime', monospace; 
-            line-height: 1.3;
-            text-align: center;
+        }
+
+        .clock-time {
+            font-size: 1.85rem; 
+            font-weight: 700;
+            letter-spacing: 1px;
+            line-height: 1.1;
+            text-shadow: 0px 0px 6px rgba(13, 148, 136, 0.1);
+        }
+
+        .clock-date {
+            font-size: 0.72rem; 
+            font-weight: 700;
+            color: #64748b;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
         
         .tabs { display: flex; background: #eef2f7; padding: 6px; border-radius: 20px; margin-bottom: 20px; box-shadow: inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff; }
@@ -213,7 +225,7 @@
                     </div>
                 </div>
             </div>
-            <div id="status-light">00:00:00<br>00,00,00</div>
+            <div id="status-light"></div>
         </div>
         
         <div class="money-middle-section">
@@ -261,6 +273,9 @@
 
     function updateLiveClock() {
         const now = new Date();
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const dayName = days[now.getDay()]; // ပတ်ရက်အမည်တို ရယူခြင်း
+        
         const dd = String(now.getDate()).padStart(2, '0');
         const mm = String(now.getMonth() + 1).padStart(2, '0');
         const yy = String(now.getFullYear()).slice(-2);
@@ -269,8 +284,12 @@
         const ss = String(now.getSeconds()).padStart(2, '0');
         
         const statusLight = document.getElementById('status-light');
-        statusLight.innerHTML = `${hh}:${min}:${ss}<br>${dd},${mm},${yy}`;
-        statusLight.style.color = apiOnline ? '#0d9488' : '#e11d48';
+        const clockColor = apiOnline ? '#0d9488' : '#e11d48';
+
+        statusLight.innerHTML = `
+            <div class="clock-time" style="color: ${clockColor};">${hh}:${min}:${ss}</div>
+            <div class="clock-date">${dayName} ${dd},${mm},${yy}</div>
+        `;
     }
 
     async function syncMoneyData() {
