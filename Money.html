@@ -20,7 +20,6 @@
             --whatsapp-clr: #25D366;
             --line-clr: #06C755; 
             --focus-border: #0072ff;
-            --vh: 1dvh;
         }
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
@@ -31,7 +30,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: calc(var(--vh, 1dvh) * 100); 
+            min-height: 100dvh; 
             width: 100vw;
             padding: env(safe-area-inset-top) 12px env(safe-area-inset-bottom) 12px;
             overflow-y: auto; 
@@ -41,7 +40,7 @@
         .card { 
             width: 100%; 
             max-width: 380px; 
-            height: calc(var(--vh, 1dvh) * 96); 
+            height: 96dvh; 
             max-height: 720px; 
             border-radius: 32px; 
             padding: 6px; 
@@ -67,6 +66,7 @@
             box-shadow: inset 4px 4px 8px #e6eef8, inset -4px -4px 8px #ffffff;
         }
 
+        /* Row 1: Logo Row */
         .logo-row {
             width: 100%;
             max-width: 290px;
@@ -101,6 +101,7 @@
         .agent-title .clr-money { color: #06C755; }
         .agent-title .clr-agent { color: #dc2626; }
         
+        /* Row 2: Clock Row */
         #status-light { 
             display: flex; 
             flex-direction: column;
@@ -124,6 +125,7 @@
             text-transform: uppercase;
         }
         
+        /* Row 3: Tabs Control */
         .tabs { 
             width: 100%;
             display: flex; 
@@ -154,6 +156,7 @@
             text-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
         
+        /* Row 4: Inputs Area */
         .inputs-container {
             width: 100%;
         }
@@ -190,6 +193,7 @@
         }
         .money-app label { display: block; font-weight: 700; color: #64748b; font-size: 0.72rem; text-align: left; padding-left: 2px; letter-spacing: 0.5px; text-transform: uppercase; }
         
+        /* Row 5: Social Icons Container */
         .social-container { 
             display: flex; 
             justify-content: space-evenly; 
@@ -218,8 +222,10 @@
         .line { color: var(--line-clr); }
         .social-icon:hover { transform: translateY(-4px) scale(1.15); }
         
+        /* Row 6: Footer Row */
         .footer-clean { font-size: 0.68rem; font-weight: bold; color: #94a3b8; letter-spacing: 0.5px; display: block; text-align: center; width: 100%; text-transform: uppercase; }
 
+        /* Auto-Scaling System */
         @media (max-height: 650px) {
             .card-inner { padding: 20px 20px; }
             .money-app h1 { font-size: 2.8rem; }
@@ -229,25 +235,6 @@
             .content.active { gap: 12px; }
             .money-input-box input { font-size: 1.5rem; }
             .social-icon { font-size: 1.6rem; width: 38px; height: 38px; }
-        }
-
-        body.keyboard-visible .card {
-            height: auto;
-            max-height: 310px;
-        }
-        body.keyboard-visible .card-inner {
-            padding: 12px 20px;
-            justify-content: center;
-            gap: 12px;
-        }
-        body.keyboard-visible .logo-row, 
-        body.keyboard-visible #status-light,
-        body.keyboard-visible .social-container,
-        body.keyboard-visible .footer-clean {
-            display: none !important; 
-        }
-        body.keyboard-visible .content.active {
-            gap: 10px;
         }
     </style>
 </head>
@@ -312,48 +299,6 @@
     let SETTINGS = { buyBase: 780, sellBase: 760 };
     let lastActiveInput = null;
     let apiOnline = true;
-
-    let isTicking = false;
-    function resetViewportHeight() {
-        if (!isTicking) {
-            window.requestAnimationFrame(() => {
-                if (window.visualViewport) {
-                    const vvHeight = window.visualViewport.height;
-                    document.documentElement.style.setProperty('--vh', `${vvHeight * 0.01}px`);
-                    
-                    if (window.innerHeight - vvHeight > 160) {
-                        document.body.classList.add('keyboard-visible');
-                    } else if (document.activeElement.tagName !== 'INPUT') {
-                        document.body.classList.remove('keyboard-visible');
-                    }
-                }
-                isTicking = false;
-            });
-            isTicking = true;
-        }
-    }
-
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', resetViewportHeight);
-    }
-    window.addEventListener('resize', resetViewportHeight);
-    window.addEventListener('DOMContentLoaded', resetViewportHeight);
-
-    document.querySelectorAll('.money-input-box input').forEach(input => {
-        input.addEventListener('focus', () => {
-            document.body.classList.add('keyboard-visible');
-            setTimeout(() => {
-                input.scrollIntoView({ block: 'center', behavior: 'smooth' });
-            }, 80);
-        });
-        input.addEventListener('blur', () => {
-            setTimeout(() => {
-                if (document.activeElement.tagName !== 'INPUT') {
-                    document.body.classList.remove('keyboard-visible');
-                }
-            }, 50);
-        });
-    });
 
     function updateLiveClock() {
         const now = new Date();
