@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barcode & Serial Scanner</title>
+    <title>InvenScan Pro - Barcode & Serial Scanner</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- html5-qrcode Library -->
@@ -35,7 +35,10 @@
 
         <!-- Scanned Items List -->
         <div class="space-y-3">
-            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 px-1">စာရင်းသွင်းထားသော ပစ္စည်းများ</h2>
+            <div class="flex justify-between items-center px-1">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">စာရင်းသွင်းထားသော ပစ္စည်းများ</h2>
+                <span class="text-[11px] text-indigo-600 font-medium">ပြင်ဆင်လိုပါက ကတ်ပြားကို နှိပ်ပါ</span>
+            </div>
             <div id="item-list" class="space-y-3">
                 <!-- JavaScript မှတဆင့် ဝင်ရောက်လာမည် -->
             </div>
@@ -88,6 +91,30 @@
         </div>
     </div>
 
+    <!-- Edit Item Modal -->
+    <div id="edit-item-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-2xl p-6 shadow-2xl space-y-4">
+            <h3 class="font-bold text-lg text-slate-900">✏️ ပစ္စည်းအချက်အလက် ပြင်ဆင်ရန်</h3>
+            <input type="hidden" id="edit-original-code">
+            
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">ပစ္စည်းနာမည် (Item Name)</label>
+                <input type="text" id="edit-name" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">လက်ကျန်အရေအတွက် (Quantity)</label>
+                <input type="number" id="edit-qty" min="0" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+
+            <div class="flex gap-2 pt-2">
+                <button onclick="deleteItem()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold px-3 py-2.5 rounded-xl text-sm transition">ဖျက်မည်</button>
+                <button onclick="closeEditModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-sm transition">မလုပ်တော့ပါ</button>
+                <button onclick="saveEditedItem()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">သိမ်းမည်</button>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript Logic -->
     <script>
         let html5QrCode = null;
@@ -107,7 +134,7 @@
 
             itemsToDisplay.forEach(item => {
                 listEl.innerHTML += `
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+                    <div onclick="openEditModal('${item.code}')" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between cursor-pointer hover:border-indigo-400 transition">
                         <div>
                             <h3 class="font-bold text-slate-800 text-sm">${item.name}</h3>
                             <p class="text-xs text-slate-400 mt-0.5">SN: ${item.code}</p>
@@ -155,12 +182,10 @@
             let existingItem = db.find(item => item.code === code);
             
             if (existingItem) {
-                // ပစ္စည်းရှိနှင့်ပြီးသားဆိုရင် အရေအတွက် (qty) ၁ ခု တိုးမယ်
                 existingItem.qty += 1;
                 existingItem.date = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 saveAndRefresh();
             } else {
-                // ပစ္စည်းအသစ်ဆိုရင် Form ပေါ်လာမယ်
                 document.getElementById('new-code').value = code;
                 document.getElementById('new-name').value = '';
                 document.getElementById('new-item-modal').classList.remove('hidden');
@@ -181,6 +206,44 @@
             document.getElementById('new-item-modal').classList.add('hidden');
         }
 
+        // Edit Modal Functions
+        function openEditModal(code) {
+            const item = db.find(i => i.code === code);
+            if (!item) return;
+
+            document.getElementById('edit-original-code').value = item.code;
+            document.getElementById('edit-name').value = item.name;
+            document.getElementById('edit-qty').value = item.qty;
+            document.getElementById('edit-item-modal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-item-modal').classList.add('hidden');
+        }
+
+        function saveEditedItem() {
+            const code = document.getElementById('edit-original-code').value;
+            const newName = document.getElementById('edit-name').value.trim();
+            const newQty = parseInt(document.getElementById('edit-qty').value);
+
+            let item = db.find(i => i.code === code);
+            if (item) {
+                if (newName) item.name = newName;
+                if (!isNaN(newQty)) item.qty = newQty;
+                item.date = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                saveAndRefresh();
+            }
+            closeEditModal();
+        }
+
+        function deleteItem() {
+            if (!confirm("ဤပစ္စည်းကို စာရင်းထဲမှ ဖျက်ရန် သေချာပါသလား?")) return;
+            const code = document.getElementById('edit-original-code').value;
+            db = db.filter(i => i.code !== code);
+            saveAndRefresh();
+            closeEditModal();
+        }
+
         function saveAndRefresh() {
             localStorage.setItem('inv_scanner_db', JSON.stringify(db));
             renderList();
@@ -194,7 +257,6 @@
             renderList(filtered);
         }
 
-        // စစချင်း ဖွင့်ချိန်မှာ စာရင်းစတင်ပြသရန်
         renderList();
     </script>
 </body>
