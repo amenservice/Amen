@@ -1,9 +1,10 @@
+ကော်ပီကူးရတာ အဆင်ပြေသွားအောင် ကုဒ်အပြည့်အစုံကို အောက်မှာ ပြန်ထုတ်ပေးလိုက်ပါတယ်ဗျ။ (Chat UI ရဲ့ ပုံသေဒီဇိုင်းအရ Copy ခလုတ်က ကုဒ်ဘလောက်ရဲ့ အပေါ်ထောင့်မှာပဲ ရှိနေတတ်လို့ပါ၊ အခုတော့ အောက်ဆုံးရောက်နေပြီမို့ ကူးရတာ နည်းနည်းပိုလွယ်သွားပါလိမ့်မယ်။)
 <!DOCTYPE html>
 <html lang="my">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InvenScan Pro - Barcode & Serial Scanner</title>
+    <title>InvenScan Pro - Inventory Management</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- html5-qrcode Library -->
@@ -22,22 +23,33 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 max-w-md w-full mx-auto p-4 pb-28">
+    <main class="flex-1 max-w-md w-full mx-auto p-4 pb-28 space-y-6">
         
         <!-- Search Bar -->
-        <div class="relative mb-6">
-            <input type="text" id="search-box" oninput="handleSearch()" placeholder="ပစ္စည်းနာမည် (သို့) Serial No ဖြင့် ရှာရန်..." 
+        <div class="relative">
+            <input type="text" id="search-box" oninput="handleSearch()" placeholder="အမျိုးအစား၊ နာမည် (သို့) Serial No ဖြင့် ရှာရန်..." 
                 class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 pl-11 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-xs transition">
             <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
         </div>
 
+        <!-- Category Dashboard Grid -->
+        <div>
+            <div class="flex justify-between items-center mb-3 px-1">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">အမျိုးအစားအလိုက် ကြည့်ရန်</h2>
+                <button onclick="filterByCategory('all')" class="text-xs text-indigo-600 font-bold hover:underline">အားလုံးပြရန်</button>
+            </div>
+            <div id="category-grid" class="grid grid-cols-4 gap-2.5">
+                <!-- JavaScript မှတဆင့် ဝင်ရောက်လာမည် -->
+            </div>
+        </div>
+
         <!-- Scanned Items List -->
         <div class="space-y-3">
             <div class="flex justify-between items-center px-1">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">စာရင်းသွင်းထားသော ပစ္စည်းများ</h2>
-                <span class="text-[11px] text-indigo-600 font-medium">ပြင်ဆင်လိုပါက ကတ်ပြားကို နှိပ်ပါ</span>
+                <h2 id="list-title" class="text-xs font-bold uppercase tracking-wider text-slate-400">ပစ္စည်းစာရင်းများ</h2>
+                <span class="text-[11px] text-indigo-600 font-medium">ပြင်ဆင်ရန် ကတ်ပြားကိုနှိပ်ပါ</span>
             </div>
             <div id="item-list" class="space-y-3">
                 <!-- JavaScript မှတဆင့် ဝင်ရောက်လာမည် -->
@@ -72,7 +84,7 @@
     <div id="new-item-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-sm rounded-2xl p-6 shadow-2xl space-y-4">
             <h3 class="font-bold text-lg text-slate-900">✨ ပစ္စည်းအသစ် တွေ့ရှိပါသည်</h3>
-            <p class="text-xs text-slate-500">ဤ Serial Number အတွက် အချက်အလက်အသစ် သတ်မှတ်ပေးပါရန်။</p>
+            <p class="text-xs text-slate-500">ဤကုဒ်အတွက် လိုအပ်သော အချက်အလက်များ ဖြည့်သွင်းပါ။</p>
             
             <div>
                 <label class="block text-xs font-bold text-slate-600 mb-1">Serial / Barcode</label>
@@ -80,8 +92,20 @@
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-slate-600 mb-1">ပစ္စည်းနာမည် (Item Name)</label>
-                <input type="text" id="new-name" placeholder="ဥပမာ - Bosch Drill Machine" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <label class="block text-xs font-bold text-slate-600 mb-1">အမျိုးအစား (Category)</label>
+                <select id="new-category" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+                    <!-- Categories will be loaded dynamically -->
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">အများသုံးအမျိုးအစား (Generic Name)</label>
+                <input type="text" id="new-generic" placeholder="ဥပမာ - သွေးပေါင်ချိန်စက်" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">တိကျသောနာမည်/တံဆိပ် (Brand / Model)</label>
+                <input type="text" id="new-brand" placeholder="ဥပမာ - Omron M2" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
             </div>
 
             <div class="flex gap-3 pt-2">
@@ -98,8 +122,19 @@
             <input type="hidden" id="edit-original-code">
             
             <div>
-                <label class="block text-xs font-bold text-slate-600 mb-1">ပစ္စည်းနာမည် (Item Name)</label>
-                <input type="text" id="edit-name" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <label class="block text-xs font-bold text-slate-600 mb-1">အမျိုးအစား (Category)</label>
+                <select id="edit-category" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">အများသုံးအမျိုးအစား (Generic Name)</label>
+                <input type="text" id="edit-generic" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">တိကျသောနာမည်/တံဆိပ် (Brand / Model)</label>
+                <input type="text" id="edit-brand" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
             </div>
 
             <div>
@@ -117,29 +152,98 @@
 
     <!-- JavaScript Logic -->
     <script>
+        const categories = [
+            { name: "စားသောက်ကုန်", icon: "🍔" },
+            { name: "လူသုံးကုန်", icon: "🧴" },
+            { name: "ကျား/မ အသုံးအဆောင်", icon: "👕" },
+            { name: "ကလေးအသုံးအဆောင်", icon: "🍼" },
+            { name: "ဆေးဝါး", icon: "💊" },
+            { name: "စက်ပစ္စည်း", icon: "⚙️" },
+            { name: "လျှပ်စစ်", icon: "⚡" },
+            { name: "စာရေးကရိယာ", icon: "📚" }
+        ];
+
         let html5QrCode = null;
-        let db = JSON.parse(localStorage.getItem('inv_scanner_db')) || [];
+        let db = JSON.parse(localStorage.getItem('inv_scanner_final_db')) || [];
+        let currentFilter = 'all';
+
+        function initApp() {
+            renderCategories();
+            populateCategoryDropdowns();
+            renderList();
+        }
+
+        function renderCategories() {
+            const grid = document.getElementById('category-grid');
+            grid.innerHTML = '';
+            
+            categories.forEach(cat => {
+                const count = db.filter(item => item.category === cat.name).length;
+                const isActive = currentFilter === cat.name;
+                grid.innerHTML += `
+                    <div onclick="filterByCategory('${cat.name}')" class="bg-white border ${isActive ? 'border-indigo-600 ring-2 ring-indigo-100' : 'border-slate-200'} p-3 rounded-2xl flex flex-col items-center justify-center text-center cursor-pointer hover:border-indigo-400 transition shadow-xs">
+                        <span class="text-2xl mb-1">${cat.icon}</span>
+                        <span class="text-[11px] font-bold text-slate-700 truncate w-full">${cat.name}</span>
+                        <span class="text-[10px] text-slate-400 mt-0.5">${count} ခု</span>
+                    </div>
+                `;
+            });
+        }
+
+        function populateCategoryDropdowns() {
+            const newSelect = document.getElementById('new-category');
+            const editSelect = document.getElementById('edit-category');
+            
+            let optionsHtml = '';
+            categories.forEach(cat => {
+                optionsHtml += `<option value="${cat.name}">${cat.icon} ${cat.name}</option>`;
+            });
+
+            newSelect.innerHTML = optionsHtml;
+            editSelect.innerHTML = optionsHtml;
+        }
+
+        function filterByCategory(catName) {
+            currentFilter = catName;
+            renderCategories();
+            
+            if (catName === 'all') {
+                document.getElementById('list-title').innerText = 'ပစ္စည်းစာရင်းအားလုံး';
+                renderList(db);
+            } else {
+                document.getElementById('list-title').innerText = `${catName} စာရင်းများ`;
+                const filtered = db.filter(item => item.category === catName);
+                renderList(filtered);
+            }
+        }
 
         function renderList(itemsToDisplay = db) {
             const listEl = document.getElementById('item-list');
             const totalEl = document.getElementById('total-count');
             
             listEl.innerHTML = '';
-            totalEl.innerText = itemsToDisplay.reduce((sum, item) => sum + item.qty, 0);
+            totalEl.innerText = db.reduce((sum, item) => sum + item.qty, 0);
 
             if (itemsToDisplay.length === 0) {
-                listEl.innerHTML = `<div class="text-center py-12 text-slate-400 text-sm">စာရင်းမရှိသေးပါ။ ကင်မရာဖွင့်ပြီး စကန်ဖတ်ပါ။</div>`;
+                listEl.innerHTML = `<div class="text-center py-10 text-slate-400 text-sm bg-white rounded-2xl border border-slate-200">ဤအမျိုးအစားတွင် စာရင်းမရှိသေးပါ။</div>`;
                 return;
             }
 
             itemsToDisplay.forEach(item => {
+                const catObj = categories.find(c => c.name === item.category) || { icon: "📦" };
                 listEl.innerHTML += `
                     <div onclick="openEditModal('${item.code}')" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between cursor-pointer hover:border-indigo-400 transition">
-                        <div>
-                            <h3 class="font-bold text-slate-800 text-sm">${item.name}</h3>
-                            <p class="text-xs text-slate-400 mt-0.5">SN: ${item.code}</p>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-xl shrink-0">
+                                ${catObj.icon}
+                            </div>
+                            <div>
+                                <span class="inline-block bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-md mb-0.5">${item.category || 'အမျိုးအစားမရှိ'}</span>
+                                <h3 class="font-bold text-slate-800 text-sm">${item.brandName || 'အမည်မသိ'} <span class="text-xs font-normal text-slate-500">(${item.genericName || ''})</span></h3>
+                                <p class="text-xs text-slate-400 mt-0.5">SN: ${item.code}</p>
+                            </div>
                         </div>
-                        <div class="text-right">
+                        <div class="text-right shrink-0">
                             <span class="inline-block bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-lg">လက်ကျန်: ${item.qty}</span>
                             <p class="text-[10px] text-slate-400 mt-1">${item.date}</p>
                         </div>
@@ -187,17 +291,20 @@
                 saveAndRefresh();
             } else {
                 document.getElementById('new-code').value = code;
-                document.getElementById('new-name').value = '';
+                document.getElementById('new-generic').value = '';
+                document.getElementById('new-brand').value = '';
                 document.getElementById('new-item-modal').classList.remove('hidden');
             }
         }
 
         function saveNewItem() {
             const code = document.getElementById('new-code').value;
-            const name = document.getElementById('new-name').value.trim() || "အမည်မသိ ပစ္စည်း";
+            const category = document.getElementById('new-category').value;
+            const genericName = document.getElementById('new-generic').value.trim() || "အထွေထွေပစ္စည်း";
+            const brandName = document.getElementById('new-brand').value.trim() || "အမည်မသိ တံဆိပ်";
             const date = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
-            db.unshift({ code, name, qty: 1, date });
+            db.unshift({ code, category, genericName, brandName, qty: 1, date });
             saveAndRefresh();
             closeNewItemModal();
         }
@@ -206,13 +313,14 @@
             document.getElementById('new-item-modal').classList.add('hidden');
         }
 
-        // Edit Modal Functions
         function openEditModal(code) {
             const item = db.find(i => i.code === code);
             if (!item) return;
 
             document.getElementById('edit-original-code').value = item.code;
-            document.getElementById('edit-name').value = item.name;
+            document.getElementById('edit-category').value = item.category || categories[0].name;
+            document.getElementById('edit-generic').value = item.genericName || '';
+            document.getElementById('edit-brand').value = item.brandName || '';
             document.getElementById('edit-qty').value = item.qty;
             document.getElementById('edit-item-modal').classList.remove('hidden');
         }
@@ -223,12 +331,16 @@
 
         function saveEditedItem() {
             const code = document.getElementById('edit-original-code').value;
-            const newName = document.getElementById('edit-name').value.trim();
+            const newCategory = document.getElementById('edit-category').value;
+            const newGeneric = document.getElementById('edit-generic').value.trim();
+            const newBrand = document.getElementById('edit-brand').value.trim();
             const newQty = parseInt(document.getElementById('edit-qty').value);
 
             let item = db.find(i => i.code === code);
             if (item) {
-                if (newName) item.name = newName;
+                item.category = newCategory;
+                if (newGeneric) item.genericName = newGeneric;
+                if (newBrand) item.brandName = newBrand;
                 if (!isNaN(newQty)) item.qty = newQty;
                 item.date = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 saveAndRefresh();
@@ -245,19 +357,26 @@
         }
 
         function saveAndRefresh() {
-            localStorage.setItem('inv_scanner_db', JSON.stringify(db));
-            renderList();
+            localStorage.setItem('inv_scanner_final_db', JSON.stringify(db));
+            renderCategories();
+            filterByCategory(currentFilter);
         }
 
         function handleSearch() {
             const keyword = document.getElementById('search-box').value.toLowerCase();
-            const filtered = db.filter(item => 
-                item.name.toLowerCase().includes(keyword) || item.code.toLowerCase().includes(keyword)
+            const listToSearch = currentFilter === 'all' ? db : db.filter(i => i.category === currentFilter);
+            
+            const filtered = listToSearch.filter(item => 
+                (item.genericName && item.genericName.toLowerCase().includes(keyword)) || 
+                (item.brandName && item.brandName.toLowerCase().includes(keyword)) || 
+                (item.category && item.category.toLowerCase().includes(keyword)) ||
+                (item.code && item.code.toLowerCase().includes(keyword))
             );
             renderList(filtered);
         }
 
-        renderList();
+        initApp();
     </script>
 </body>
 </html>
+
