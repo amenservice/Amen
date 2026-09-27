@@ -57,7 +57,8 @@
                     <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-md shadow-inner border border-white/20">
                         <i class="fas fa-shield-alt text-5xl text-white"></i>
                     </div>
-                    <h1 class="text-4xl font-extrabold tracking-widest drop-shadow-md">AMEN</h1>
+                    <!-- Login page title (Profile နာမည်နဲ့ အလိုအလျောက်တူအောင် ချိတ်ထားသည်) -->
+                    <h1 id="loginTitle" class="text-4xl font-extrabold tracking-widest drop-shadow-md">AMEN</h1>
                     <p id="loginSubtitle" class="text-sm text-blue-200 mt-1 font-medium">Mobile Money Agent</p>
                 </div>
 
@@ -89,6 +90,7 @@
         <!-- Header -->
         <header class="bg-blue-600 text-white p-3 shadow-md flex justify-between items-center shrink-0 z-10">
             <div>
+                <!-- Header title (Profile နာမည်နဲ့ အလိုအလျောက်တူအောင် ချိတ်ထားသည်) -->
                 <h1 id="appTitle" class="text-base font-bold tracking-wider leading-none">AMEN</h1>
                 <p id="appSubtitle" class="text-[10px] text-blue-200 mt-0.5">Mobile Money Agent</p>
             </div>
@@ -374,12 +376,12 @@
                 <form class="space-y-3" onsubmit="event.preventDefault();">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">Business Name</label>
-                        <input type="text" id="businessNameInput" class="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" placeholder="Enter business name">
+                        <input type="text" id="businessNameInput" class="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" placeholder="Enter business name" value="AMEN">
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">Business Subtitle</label>
-                        <input type="text" id="businessSubtitleInput" class="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" placeholder="Enter subtitle or category">
+                        <input type="text" id="businessSubtitleInput" class="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" placeholder="Enter subtitle or category" value="Mobile Money Agent">
                     </div>
                     
                     <div>
@@ -719,7 +721,7 @@
             document.getElementById('settingPage').classList.add('hidden');
         });
 
-        // Profile Modal
+        // Profile Modal & Dynamic Name Syncing
         const profileBtn = document.getElementById('profileBtn');
         const profileModal = document.getElementById('profileModal');
         const closeModalBtn = document.getElementById('closeModalBtn');
@@ -727,6 +729,7 @@
         const businessNameInput = document.getElementById('businessNameInput');
         const businessSubtitleInput = document.getElementById('businessSubtitleInput');
         const appTitle = document.getElementById('appTitle');
+        const loginTitle = document.getElementById('loginTitle');
         const appSubtitle = document.getElementById('appSubtitle');
         const loginSubtitle = document.getElementById('loginSubtitle');
 
@@ -737,7 +740,11 @@
         saveProfileBtn.addEventListener('click', () => {
             const newName = businessNameInput.value.trim();
             const newSubtitle = businessSubtitleInput.value.trim();
-            if (newName !== "") appTitle.textContent = newName;
+            
+            if (newName !== "") {
+                appTitle.textContent = newName;
+                loginTitle.textContent = newName;
+            }
             if (newSubtitle !== "") {
                 appSubtitle.textContent = newSubtitle;
                 loginSubtitle.textContent = newSubtitle;
@@ -875,6 +882,9 @@
         }
 
         // --- STEP BY STEP PIN LOGIC (3 Steps) ---
+        let pinStep = 1;
+        let tempNewPin = "";
+
         function resetStepPinForm() {
             pinStep = 1;
             tempNewPin = "";
@@ -923,7 +933,6 @@
             }
 
             if (pinStep === 1) {
-                // Check Current PIN
                 if (val !== currentSystemPin) {
                     stepPinError.textContent = "Incorrect Current PIN!";
                     stepPinError.classList.remove('hidden');
@@ -932,19 +941,16 @@
                 pinStep = 2;
                 updateStepUI();
             } else if (pinStep === 2) {
-                // Save New PIN temporarily
                 tempNewPin = val;
                 pinStep = 3;
                 updateStepUI();
             } else if (pinStep === 3) {
-                // Confirm New PIN
                 if (val !== tempNewPin) {
                     stepPinError.textContent = "New PIN and Confirm PIN do not match!";
                     stepPinError.classList.remove('hidden');
                     return;
                 }
                 
-                // Save Successfully
                 currentSystemPin = tempNewPin;
                 stepPinSuccess.classList.remove('hidden');
                 stepPinInput.disabled = true;
