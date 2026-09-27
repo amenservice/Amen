@@ -62,9 +62,8 @@
                     <div class="w-full">
                         <label class="block text-xs font-bold text-gray-600 mb-1 text-center">Security PIN</label>
                         <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400"><i class="fas fa-lock"></i></span>
-                            <!-- နံပါတ်ကီးဘုတ်သီးသန့်ပေါ်လာစေရန် inputmode="numeric" နဲ့ pattern="[0-9]*" ထည့်ထားပါသည် -->
-                            <input type="password" id="pinInput" required inputmode="numeric" pattern="[0-9]*" maxlength="6" class="w-full pl-10 pr-3 py-3 bg-gray-50 border border-gray-200 rounded-xl text-center text-lg tracking-widest outline-none focus:border-blue-500 focus:bg-white transition" placeholder="••••">
+                            <!-- Password အစက်ကလေးများ အလယ်တည့်တည့်ကျစေရန် text-center နှင့် pl-3 ပုံစံပြင်ဆင်ထားပါသည် -->
+                            <input type="password" id="pinInput" required inputmode="numeric" pattern="[0-9]*" maxlength="6" class="w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl text-center text-lg tracking-[0.5em] outline-none focus:border-blue-500 focus:bg-white transition" placeholder="••••">
                         </div>
                     </div>
                     <div id="loginError" class="text-red-500 text-xs text-center hidden">Incorrect PIN! (Default is 1234)</div>
@@ -317,17 +316,17 @@
                     <form id="changePinForm" class="space-y-3" onsubmit="event.preventDefault(); handleChangePin();">
                         <div>
                             <label class="block text-xs font-bold text-gray-600 mb-1">Current PIN</label>
-                            <input type="password" id="currentPinInput" required inputmode="numeric" pattern="[0-9]*" maxlength="6" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Enter current PIN">
+                            <input type="password" id="currentPinInput" required inputmode="numeric" pattern="[0-9]*" maxlength="6" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm text-center tracking-[0.5em] outline-none focus:border-blue-500 focus:bg-white transition" placeholder="••••">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-gray-600 mb-1">New PIN</label>
-                            <input type="password" id="newPinInput" required inputmode="numeric" pattern="[0-9]*" maxlength="6" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Enter new PIN">
+                            <input type="password" id="newPinInput" required inputmode="numeric" pattern="[0-9]*" maxlength="6" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm text-center tracking-[0.5em] outline-none focus:border-blue-500 focus:bg-white transition" placeholder="••••">
                         </div>
                         
                         <div>
                             <label class="block text-xs font-bold text-gray-600 mb-1">Confirm New PIN</label>
-                            <input type="password" id="confirmPinInput" required inputmode="numeric" pattern="[0-9]*" maxlength="6" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Confirm new PIN">
+                            <input type="password" id="confirmPinInput" required inputmode="numeric" pattern="[0-9]*" maxlength="6" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm text-center tracking-[0.5em] outline-none focus:border-blue-500 focus:bg-white transition" placeholder="••••">
                         </div>
 
                         <div id="pinChangeError" class="text-red-500 text-xs text-center hidden"></div>
