@@ -45,35 +45,41 @@
 
     <div class="app-container">
         
-        <!-- 1. LOGIN SCREEN -->
-        <div id="loginScreen" class="absolute inset-0 bg-blue-600 z-50 flex flex-col justify-between p-6 text-white transition-all duration-300">
-            <div class="mt-12 text-center">
-                <div class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-md shadow-inner border border-white/20">
-                    <i class="fas fa-shield-alt text-4xl text-white"></i>
-                </div>
-                <h1 class="text-3xl font-bold tracking-wider">AMEN</h1>
-                <p id="loginSubtitle" class="text-xs text-blue-200 mt-1">Mobile Money Agent</p>
-            </div>
-
-            <!-- Card -->
-            <div class="bg-white text-gray-800 rounded-3xl p-6 shadow-2xl backdrop-blur-xl flex flex-col justify-center">
-                <h2 class="text-lg font-bold mb-4 text-center text-gray-800">Enter Security PIN</h2>
-                <form id="loginForm" class="space-y-4 flex flex-col items-center" onsubmit="event.preventDefault(); handleLogin();">
-                    <div class="w-full">
-                        <label class="block text-xs font-bold text-gray-600 mb-1 text-center">Security PIN</label>
-                        <div class="relative">
-                            <!-- Password အစက်ကလေးများ အလယ်တည့်တည့်ကျစေရန် text-center နှင့် pl-3 ပုံစံပြင်ဆင်ထားပါသည် -->
-                            <input type="password" id="pinInput" required inputmode="numeric" pattern="[0-9]*" maxlength="6" class="w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl text-center text-lg tracking-[0.5em] outline-none focus:border-blue-500 focus:bg-white transition" placeholder="••••">
-                        </div>
+        <!-- 1. LOGIN SCREEN (ကီးဘုတ်တက်လာရင် အလွယ်တကူ ဆင်းလို့ရအောင် overflow-y-auto ထည့်ပေးထားသည်) -->
+        <div id="loginScreen" class="absolute inset-0 bg-blue-600 z-50 flex flex-col justify-between p-6 text-white transition-all duration-300 overflow-y-auto no-scrollbar">
+            
+            <!-- အလွတ်နေရာအတွက် spacer -->
+            <div class="my-auto w-full flex flex-col items-center justify-center py-6">
+                <!-- Logo & Title -->
+                <div class="text-center mb-6">
+                    <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-md shadow-inner border border-white/20">
+                        <i class="fas fa-shield-alt text-5xl text-white"></i>
                     </div>
-                    <div id="loginError" class="text-red-500 text-xs text-center hidden">Incorrect PIN! (Default is 1234)</div>
-                    <button type="submit" class="btn-active w-full bg-blue-600 text-white font-bold rounded-xl p-3 shadow-lg shadow-blue-600/30 transition mt-2">
-                        Login to System
-                    </button>
-                </form>
+                    <h1 class="text-4xl font-extrabold tracking-widest drop-shadow-md">AMEN</h1>
+                    <p id="loginSubtitle" class="text-sm text-blue-200 mt-1 font-medium">Mobile Money Agent</p>
+                </div>
+
+                <!-- White Card for PIN Input -->
+                <div class="bg-white text-gray-800 rounded-3xl p-6 shadow-2xl backdrop-blur-xl w-full max-w-xs flex flex-col justify-center">
+                    <h2 class="text-lg font-bold mb-4 text-center text-gray-800">Enter Security PIN</h2>
+                    <form id="loginForm" class="space-y-4 flex flex-col items-center" onsubmit="event.preventDefault(); handleLogin();">
+                        <div class="w-full">
+                            <label class="block text-xs font-bold text-gray-600 mb-1 text-center">Security PIN</label>
+                            <div class="relative">
+                                <!-- PIN အစက်ကလေးများ အလယ်တည့်တည့်ကျစေရန် text-center နှင့် tracking ကျယ်ကျယ်သုံးထားသည် -->
+                                <input type="password" id="pinInput" required inputmode="numeric" pattern="[0-9]*" maxlength="6" class="w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl text-center text-lg tracking-[0.5em] outline-none focus:border-blue-500 focus:bg-white transition" placeholder="••••">
+                            </div>
+                        </div>
+                        <div id="loginError" class="text-red-500 text-xs text-center hidden">Incorrect PIN! (Default is 1234)</div>
+                        <button type="submit" class="btn-active w-full bg-blue-600 text-white font-bold rounded-xl p-3 shadow-lg shadow-blue-600/30 transition mt-2">
+                            Login to System
+                        </button>
+                    </form>
+                </div>
             </div>
 
-            <div class="text-center text-[10px] text-blue-200 pb-2">
+            <!-- Footer Copy -->
+            <div class="text-center text-[10px] text-blue-200 pb-2 shrink-0">
                 &copy; 2026 AMEN. All rights reserved.
             </div>
         </div>
