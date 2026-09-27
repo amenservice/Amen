@@ -280,7 +280,7 @@
             </div>
         </div>
 
-        <!-- 5. TRANSFER PAGE (အမည်နှစ်ကွက်၊ ဖုန်းနံပါတ်နှစ်ကွက်) -->
+        <!-- 5. TRANSFER PAGE (အမည် ၂ ကွက်၊ ဖုန်းနံပါတ် ၂ ကွက် - ဘေးချင်းယှဉ် Grid ပုံစံ) -->
         <div id="transferPage" class="flex-1 flex flex-col p-4 overflow-y-auto no-scrollbar hidden bg-gray-50">
             <div class="flex items-center justify-between mb-4 shrink-0">
                 <div class="flex items-center space-x-2">
@@ -310,28 +310,28 @@
                         <input type="text" id="transferCommissionInput" inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition bg-gray-100" placeholder="0.00" readonly>
                     </div>
 
-                    <!-- 1. Sender Name -->
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">Sender Name (လွှဲသူနာမည်)</label>
-                        <input type="text" id="transferSenderNameInput" required inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Enter sender name">
+                    <!-- အမည် ၂ ကွက် (ဘေးချင်းယှဉ် Grid) -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Sender Name (လွှဲသူ)</label>
+                            <input type="text" id="transferSenderNameInput" required inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="လွှဲသူနာမည်">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Receiver Name (လက်ခံသူ)</label>
+                            <input type="text" id="transferReceiverNameInput" required inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="လက်ခံသူနာမည်">
+                        </div>
                     </div>
 
-                    <!-- 2. Sender Phone -->
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">Sender Phone No. (လွှဲသူဖုန်းနံပါတ်)</label>
-                        <input type="tel" id="transferSenderPhoneInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="09xxxxxxxxx">
-                    </div>
-
-                    <!-- 3. Receiver Name -->
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">Receiver Name (လက်ခံသူနာမည်)</label>
-                        <input type="text" id="transferReceiverNameInput" required inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Enter receiver name">
-                    </div>
-
-                    <!-- 4. Receiver Phone -->
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">Receiver Phone No. (လက်ခံသူဖုန်းနံပါတ်)</label>
-                        <input type="tel" id="transferReceiverPhoneInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="09xxxxxxxxx">
+                    <!-- ဖုန်းနံပါတ် ၂ ကွက် (ဘေးချင်းယှဉ် Grid) -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Sender Phone (လွှဲသူ)</label>
+                            <input type="tel" id="transferSenderPhoneInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="09xxxxxxxxx">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Receiver Phone (လက်ခံသူ)</label>
+                            <input type="tel" id="transferReceiverPhoneInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="09xxxxxxxxx">
+                        </div>
                     </div>
 
                     <div>
