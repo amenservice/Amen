@@ -57,7 +57,6 @@
                     <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-md shadow-inner border border-white/20">
                         <i class="fas fa-shield-alt text-5xl text-white"></i>
                     </div>
-                    <!-- Login page title -->
                     <h1 id="loginTitle" class="text-4xl font-extrabold tracking-widest drop-shadow-md">AMEN</h1>
                     <p id="loginSubtitle" class="text-sm text-blue-200 mt-1 font-medium">Mobile Money Agent</p>
                 </div>
@@ -90,7 +89,6 @@
         <!-- Header -->
         <header class="bg-blue-600 text-white px-4 py-3 shadow-md flex justify-between items-center shrink-0 z-10">
             <div>
-                <!-- Header title -->
                 <h1 id="appTitle" class="text-base font-bold tracking-wider leading-none">AMEN</h1>
                 <p id="appSubtitle" class="text-[10px] text-blue-200 mt-0.5">Mobile Money Agent</p>
             </div>
@@ -132,7 +130,7 @@
                 </button>
 
                 <!-- 4. THB to MMK -->
-                <button class="btn-active bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center transition h-full min-h-0">
+                <button id="thbToMmkBtn" class="btn-active bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center transition h-full min-h-0 cursor-pointer">
                     <div class="w-9 h-9 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-sm mb-1 shadow-sm shrink-0"><i class="fas fa-exchange-alt"></i></div>
                     <h3 class="text-xs font-bold text-gray-800 leading-tight">THB to MMK</h3>
                     <p class="text-[9px] text-gray-400 mt-0.5">Exchange rate</p>
@@ -280,7 +278,7 @@
             </div>
         </div>
 
-        <!-- 5. TRANSFER PAGE (အမည် ၂ ကွက်၊ ဖုန်းနံပါတ် ၂ ကွက် - ဘေးချင်းယှဉ် Grid ပုံစံ) -->
+        <!-- 5. TRANSFER PAGE -->
         <div id="transferPage" class="flex-1 flex flex-col p-4 overflow-y-auto no-scrollbar hidden bg-gray-50">
             <div class="flex items-center justify-between mb-4 shrink-0">
                 <div class="flex items-center space-x-2">
@@ -310,7 +308,6 @@
                         <input type="text" id="transferCommissionInput" inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition bg-gray-100" placeholder="0.00" readonly>
                     </div>
 
-                    <!-- အမည် ၂ ကွက် (ဘေးချင်းယှဉ် Grid) -->
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-xs font-bold text-gray-600 mb-1">Sender Name (လွှဲသူ)</label>
@@ -322,7 +319,6 @@
                         </div>
                     </div>
 
-                    <!-- ဖုန်းနံပါတ် ၂ ကွက် (ဘေးချင်းယှဉ် Grid) -->
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-xs font-bold text-gray-600 mb-1">Sender Phone (လွှဲသူ)</label>
@@ -350,7 +346,69 @@
             </div>
         </div>
 
-        <!-- 6. SETTING PAGE -->
+        <!-- 6. THB TO MMK PAGE (Manual Input & Balance Update) -->
+        <div id="thbToMmkPage" class="flex-1 flex flex-col p-4 overflow-y-auto no-scrollbar hidden bg-gray-50">
+            <div class="flex items-center justify-between mb-4 shrink-0">
+                <div class="flex items-center space-x-2">
+                    <button id="backFromThbToMmkBtn" class="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition shadow-sm">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-gray-800 text-base font-bold">THB to MMK Exchange</h2>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3 pb-4">
+                <form id="thbToMmkForm" class="space-y-3" onsubmit="event.preventDefault(); handleThbToMmkSubmit();">
+                    <!-- Bank / Wallet Select (Cash အမြဲအသေပါမည်) -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Select Bank / Wallet / Cash (MMK ထုတ်ပေးမည့်နေရာ)</label>
+                        <select id="thbToMmkBankSelect" required class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition">
+                            <option value="">-- Choose Bank / Cash --</option>
+                        </select>
+                    </div>
+
+                    <!-- THB Amount (Manual Input) -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">THB Amount (ရရှိမည့် ဘတ်ငွေ)</label>
+                        <input type="text" id="thbAmountInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="0" onblur="formatInputAmount(this, 2)">
+                    </div>
+
+                    <!-- MMK Amount (Manual Input) -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">MMK Amount (ထုတ်ပေးရမည့် ကျပ်ငွေ)</label>
+                        <input type="text" id="mmkAmountInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="0" onblur="formatInputAmount(this, 2)">
+                    </div>
+
+                    <!-- Customer Name -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Customer Name</label>
+                        <input type="text" id="thbNameInput" required inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Enter name">
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Phone Number</label>
+                        <input type="tel" id="thbPhoneInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="09xxxxxxxxx">
+                    </div>
+
+                    <!-- Remark -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Remark (Optional)</label>
+                        <input type="text" id="thbRemarkInput" inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Note here">
+                    </div>
+
+                    <div id="thbSuccessMsg" class="text-green-600 text-xs text-center hidden font-bold">THB to MMK transaction successful! Balances updated.</div>
+                    <div id="thbErrorMsg" class="text-red-500 text-xs text-center hidden font-bold"></div>
+
+                    <button type="submit" class="btn-active w-full bg-purple-600 text-white font-bold rounded-xl p-3 mt-2 transition text-sm flex items-center justify-center space-x-2 shadow-lg shadow-purple-600/20">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Confirm THB to MMK</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 7. SETTING PAGE -->
         <div id="settingPage" class="flex-1 flex flex-col p-4 overflow-y-auto no-scrollbar hidden bg-gray-50">
             <div class="flex items-center justify-between mb-4 shrink-0">
                 <div class="flex items-center space-x-2">
@@ -959,6 +1017,103 @@
             }, 1500);
         }
 
+        // --- THB TO MMK LOGIC (Balance Auto Update) ---
+        const thbToMmkBtn = document.getElementById('thbToMmkBtn');
+        const thbToMmkPage = document.getElementById('thbToMmkPage');
+        const backFromThbToMmkBtn = document.getElementById('backFromThbToMmkBtn');
+
+        thbToMmkBtn.addEventListener('click', () => {
+            history.pushState({ page: "thbToMmk" }, "", "");
+            openThbToMmkPage();
+        });
+
+        function openThbToMmkPage() {
+            mainDashboard.classList.add('hidden');
+            thbToMmkPage.classList.remove('hidden');
+            
+            const selectEl = document.getElementById('thbToMmkBankSelect');
+            selectEl.innerHTML = `<option value="cash">Cash (ငွေသား)</option>`;
+            bankList.forEach((bank, idx) => {
+                selectEl.innerHTML += `<option value="${idx}">${bank.name}</option>`;
+            });
+
+            document.getElementById('thbAmountInput').value = "";
+            document.getElementById('mmkAmountInput').value = "";
+            document.getElementById('thbNameInput').value = "";
+            document.getElementById('thbPhoneInput').value = "";
+            document.getElementById('thbRemarkInput').value = "";
+            document.getElementById('thbSuccessMsg').classList.add('hidden');
+            document.getElementById('thbErrorMsg').classList.add('hidden');
+        }
+
+        function closeThbToMmkPage() {
+            thbToMmkPage.classList.add('hidden');
+            mainDashboard.classList.remove('hidden');
+        }
+
+        backFromThbToMmkBtn.addEventListener('click', () => {
+            if (history.state && history.state.page === "thbToMmk") history.back();
+            else closeThbToMmkPage();
+        });
+
+        function handleThbToMmkSubmit() {
+            const selectedVal = document.getElementById('thbToMmkBankSelect').value;
+            const rawThb = document.getElementById('thbAmountInput').value.replace(/,/g, '').trim();
+            const rawMmk = document.getElementById('mmkAmountInput').value.replace(/,/g, '').trim();
+            const thbAmt = parseFloat(rawThb);
+            const mmkAmt = parseFloat(rawMmk);
+            
+            const errorMsg = document.getElementById('thbErrorMsg');
+            const successMsg = document.getElementById('thbSuccessMsg');
+
+            errorMsg.classList.add('hidden');
+            successMsg.classList.add('hidden');
+
+            if (selectedVal === "") {
+                errorMsg.textContent = "Please select Cash or Bank!";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+            if (isNaN(thbAmt) || thbAmt <= 0 || isNaN(mmkAmt) || mmkAmt <= 0) {
+                errorMsg.textContent = "Please enter valid THB and MMK amounts!";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            // 1. MMK ဘက်ခြမ်း စစ်ဆေးခြင်းနှင့် နှုတ်ယူခြင်း (Cash သို့မဟုတ် သက်ဆိုင်ရာဘဏ်မှ)
+            if (selectedVal === "cash") {
+                let currentCash = parseFloat(currentCashBalance.replace(/,/g, '')) || 0;
+                if (mmkAmt > currentCash) {
+                    errorMsg.textContent = "Insufficient Cash balance to pay MMK!";
+                    errorMsg.classList.remove('hidden');
+                    return;
+                }
+                currentCash -= mmkAmt;
+                currentCashBalance = formatNumber(currentCash, 2);
+            } else {
+                let bankIdx = parseInt(selectedVal);
+                let currentBankBal = parseFloat(bankList[bankIdx].balance.replace(/,/g, '')) || 0;
+                if (mmkAmt > currentBankBal) {
+                    errorMsg.textContent = `Insufficient balance in ${bankList[bankIdx].name}!`;
+                    errorMsg.classList.remove('hidden');
+                    return;
+                }
+                currentBankBal -= mmkAmt;
+                bankList[bankIdx].balance = formatNumber(currentBankBal, 2);
+            }
+
+            // 2. THB ဘက်ခြမ်း တိုးလာခြင်း (THB Balance ထဲသို့ ထည့်သွင်းခြင်း)
+            let currentThb = parseFloat(currentThbBalance.replace(/,/g, '')) || 0;
+            currentThb += thbAmt;
+            currentThbBalance = formatNumber(currentThb, 2);
+
+            successMsg.classList.remove('hidden');
+            setTimeout(() => {
+                if (history.state && history.state.page === "thbToMmk") history.back();
+                else closeThbToMmkPage();
+            }, 1500);
+        }
+
         // --- YES / NO CONFIRM MODAL CONTROLLER (ENGLISH ONLY) ---
         function showConfirmModal(title, desc, iconClass, iconBgColor, yesBtnColorClass, onYesCallback) {
             const modal = document.getElementById('confirmModal');
@@ -1153,6 +1308,7 @@
             document.getElementById('depositPage').classList.add('hidden');
             document.getElementById('cashOutPage').classList.add('hidden');
             document.getElementById('transferPage').classList.add('hidden');
+            document.getElementById('thbToMmkPage').classList.add('hidden');
         });
 
         // Profile Modal & Dynamic Name Syncing
@@ -1263,6 +1419,7 @@
             if (depositPage.classList.contains('hidden') === false) closeDepositPage();
             if (cashOutPage.classList.contains('hidden') === false) closeCashOutPage();
             if (transferPage.classList.contains('hidden') === false) closeTransferPage();
+            if (thbToMmkPage.classList.contains('hidden') === false) closeThbToMmkPage();
         });
 
         function handleSaveExchangeRate() {
