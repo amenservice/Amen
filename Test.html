@@ -118,14 +118,14 @@
                 </button>
 
                 <!-- 2. Cash Out -->
-                <button class="btn-active bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center transition h-full min-h-0">
+                <button id="cashOutBtn" class="btn-active bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center transition h-full min-h-0 cursor-pointer">
                     <div class="w-9 h-9 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-sm mb-1 shadow-sm shrink-0"><i class="fas fa-arrow-up"></i></div>
                     <h3 class="text-xs font-bold text-gray-800 leading-tight">Cash Out</h3>
                     <p class="text-[9px] text-gray-400 mt-0.5">Withdraw funds</p>
                 </button>
 
                 <!-- 3. Transfer -->
-                <button class="btn-active bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center transition h-full min-h-0">
+                <button id="transferBtn" class="btn-active bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center transition h-full min-h-0 cursor-pointer">
                     <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm mb-1 shadow-sm shrink-0"><i class="fas fa-paper-plane"></i></div>
                     <h3 class="text-xs font-bold text-gray-800 leading-tight">Transfer</h3>
                     <p class="text-[9px] text-gray-400 mt-0.5">Send money</p>
@@ -181,7 +181,6 @@
 
             <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3 pb-4">
                 <form id="depositForm" class="space-y-3" onsubmit="event.preventDefault(); handleDepositSubmit();">
-                    <!-- Select Bank / Wallet (Name Only) -->
                     <div>
                         <label class="block text-xs font-bold text-gray-600 mb-1">Select Bank / Wallet</label>
                         <select id="depositBankSelect" required class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition">
@@ -189,31 +188,26 @@
                         </select>
                     </div>
 
-                    <!-- Amount (Number Pad) -->
                     <div>
                         <label class="block text-xs font-bold text-gray-600 mb-1">Amount (MMK)</label>
-                        <input type="text" id="depositAmountInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="0" oninput="calculateCommission()" onblur="formatInputAmount(this, 2)">
+                        <input type="text" id="depositAmountInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="0" oninput="calculateCommission('deposit')" onblur="formatInputAmount(this, 2)">
                     </div>
 
-                    <!-- Commission (Number Pad) -->
                     <div>
                         <label class="block text-xs font-bold text-gray-600 mb-1">Commission (MMK)</label>
                         <input type="text" id="depositCommissionInput" inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition bg-gray-100" placeholder="0.00" readonly>
                     </div>
 
-                    <!-- Customer Name -->
                     <div>
                         <label class="block text-xs font-bold text-gray-600 mb-1">Customer Name</label>
                         <input type="text" id="depositNameInput" required inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Enter name">
                     </div>
 
-                    <!-- Phone Number (Number Pad) -->
                     <div>
                         <label class="block text-xs font-bold text-gray-600 mb-1">Phone Number</label>
                         <input type="tel" id="depositPhoneInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="09xxxxxxxxx">
                     </div>
 
-                    <!-- Remark -->
                     <div>
                         <label class="block text-xs font-bold text-gray-600 mb-1">Remark (Optional)</label>
                         <input type="text" id="depositRemarkInput" inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Note here">
@@ -230,7 +224,119 @@
             </div>
         </div>
 
-        <!-- 4. SETTING PAGE -->
+        <!-- 4. CASH OUT PAGE -->
+        <div id="cashOutPage" class="flex-1 flex flex-col p-4 overflow-y-auto no-scrollbar hidden bg-gray-50">
+            <div class="flex items-center justify-between mb-4 shrink-0">
+                <div class="flex items-center space-x-2">
+                    <button id="backFromCashOutBtn" class="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition shadow-sm">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-gray-800 text-base font-bold">Cash Out (Withdraw)</h2>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3 pb-4">
+                <form id="cashOutForm" class="space-y-3" onsubmit="event.preventDefault(); handleCashOutSubmit();">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Select Bank / Wallet</label>
+                        <select id="cashOutBankSelect" required class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition">
+                            <option value="">-- Choose Bank / Wallet --</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Amount (MMK)</label>
+                        <input type="text" id="cashOutAmountInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="0" oninput="calculateCommission('cashOut')" onblur="formatInputAmount(this, 2)">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Commission (MMK)</label>
+                        <input type="text" id="cashOutCommissionInput" inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition bg-gray-100" placeholder="0.00" readonly>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Customer Name</label>
+                        <input type="text" id="cashOutNameInput" required inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Enter name">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Phone Number</label>
+                        <input type="tel" id="cashOutPhoneInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="09xxxxxxxxx">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Remark (Optional)</label>
+                        <input type="text" id="cashOutRemarkInput" inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Note here">
+                    </div>
+
+                    <div id="cashOutSuccessMsg" class="text-green-600 text-xs text-center hidden font-bold">Cash Out successful! Balances updated.</div>
+                    <div id="cashOutErrorMsg" class="text-red-500 text-xs text-center hidden font-bold"></div>
+
+                    <button type="submit" class="btn-active w-full bg-red-600 text-white font-bold rounded-xl p-3 mt-2 transition text-sm flex items-center justify-center space-x-2 shadow-lg shadow-red-600/20">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Confirm Cash Out</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 5. TRANSFER PAGE -->
+        <div id="transferPage" class="flex-1 flex flex-col p-4 overflow-y-auto no-scrollbar hidden bg-gray-50">
+            <div class="flex items-center justify-between mb-4 shrink-0">
+                <div class="flex items-center space-x-2">
+                    <button id="backFromTransferBtn" class="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition shadow-sm">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-gray-800 text-base font-bold">Transfer Money</h2>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3 pb-4">
+                <form id="transferForm" class="space-y-3" onsubmit="event.preventDefault(); handleTransferSubmit();">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Select Bank / Wallet</label>
+                        <select id="transferBankSelect" required class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition">
+                            <option value="">-- Choose Bank / Wallet --</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Amount (MMK)</label>
+                        <input type="text" id="transferAmountInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="0" oninput="calculateCommission('transfer')" onblur="formatInputAmount(this, 2)">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Commission / Fee (MMK)</label>
+                        <input type="text" id="transferCommissionInput" inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition bg-gray-100" placeholder="0.00" readonly>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Customer Name</label>
+                        <input type="text" id="transferNameInput" required inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Enter name">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Phone Number</label>
+                        <input type="tel" id="transferPhoneInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="09xxxxxxxxx">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Remark (Optional)</label>
+                        <input type="text" id="transferRemarkInput" inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Note here">
+                    </div>
+
+                    <div id="transferSuccessMsg" class="text-green-600 text-xs text-center hidden font-bold">Transfer successful! Balances updated.</div>
+                    <div id="transferErrorMsg" class="text-red-500 text-xs text-center hidden font-bold"></div>
+
+                    <button type="submit" class="btn-active w-full bg-blue-600 text-white font-bold rounded-xl p-3 mt-2 transition text-sm flex items-center justify-center space-x-2 shadow-lg shadow-blue-600/20">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Confirm Transfer</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 6. SETTING PAGE -->
         <div id="settingPage" class="flex-1 flex flex-col p-4 overflow-y-auto no-scrollbar hidden bg-gray-50">
             <div class="flex items-center justify-between mb-4 shrink-0">
                 <div class="flex items-center space-x-2">
@@ -571,56 +677,15 @@
             );
         }
 
-        // --- DEPOSIT PAGE & LOGIC ---
-        const cashInBtn = document.getElementById('cashInBtn');
-        const depositPage = document.getElementById('depositPage');
-        const backFromDepositBtn = document.getElementById('backFromDepositBtn');
-        const depositBankSelect = document.getElementById('depositBankSelect');
-        const depositAmountInput = document.getElementById('depositAmountInput');
-        const depositCommissionInput = document.getElementById('depositCommissionInput');
+        // --- COMMON COMMISSION CALCULATOR ---
+        function calculateCommission(type) {
+            let amountInput = document.getElementById(type + 'AmountInput');
+            let commInput = document.getElementById(type + 'CommissionInput');
 
-        cashInBtn.addEventListener('click', () => {
-            history.pushState({ page: "deposit" }, "", "");
-            openDepositPage();
-        });
-
-        function openDepositPage() {
-            mainDashboard.classList.add('hidden');
-            depositPage.classList.remove('hidden');
-            
-            // Populate Bank Select Options (Name Only)
-            depositBankSelect.innerHTML = `<option value="">-- Choose Bank / Wallet --</option>`;
-            bankList.forEach((bank, idx) => {
-                depositBankSelect.innerHTML += `<option value="${idx}">${bank.name}</option>`;
-            });
-
-            depositAmountInput.value = "";
-            depositCommissionInput.value = "";
-            document.getElementById('depositNameInput').value = "";
-            document.getElementById('depositPhoneInput').value = "";
-            document.getElementById('depositRemarkInput').value = "";
-            document.getElementById('depositSuccessMsg').classList.add('hidden');
-            document.getElementById('depositErrorMsg').classList.add('hidden');
-        }
-
-        function closeDepositPage() {
-            depositPage.classList.add('hidden');
-            mainDashboard.classList.remove('hidden');
-        }
-
-        backFromDepositBtn.addEventListener('click', () => {
-            if (history.state && history.state.page === "deposit") {
-                history.back();
-            } else {
-                closeDepositPage();
-            }
-        });
-
-        function calculateCommission() {
-            let rawAmt = depositAmountInput.value.replace(/,/g, '').trim();
+            let rawAmt = amountInput.value.replace(/,/g, '').trim();
             let amount = parseFloat(rawAmt);
             if (isNaN(amount) || amount <= 0) {
-                depositCommissionInput.value = "";
+                commInput.value = "";
                 return;
             }
 
@@ -636,12 +701,51 @@
             let ratePercent = startRate + (endRate - startRate) * ratio;
             let commission = amount * (ratePercent / 100);
 
-            depositCommissionInput.value = formatNumber(commission, 2);
+            commInput.value = formatNumber(commission, 2);
         }
 
+        // --- DEPOSIT (CASH IN) LOGIC ---
+        const cashInBtn = document.getElementById('cashInBtn');
+        const depositPage = document.getElementById('depositPage');
+        const backFromDepositBtn = document.getElementById('backFromDepositBtn');
+
+        cashInBtn.addEventListener('click', () => {
+            history.pushState({ page: "deposit" }, "", "");
+            openDepositPage();
+        });
+
+        function openDepositPage() {
+            mainDashboard.classList.add('hidden');
+            depositPage.classList.remove('hidden');
+            
+            const selectEl = document.getElementById('depositBankSelect');
+            selectEl.innerHTML = `<option value="">-- Choose Bank / Wallet --</option>`;
+            bankList.forEach((bank, idx) => {
+                selectEl.innerHTML += `<option value="${idx}">${bank.name}</option>`;
+            });
+
+            document.getElementById('depositAmountInput').value = "";
+            document.getElementById('depositCommissionInput').value = "";
+            document.getElementById('depositNameInput').value = "";
+            document.getElementById('depositPhoneInput').value = "";
+            document.getElementById('depositRemarkInput').value = "";
+            document.getElementById('depositSuccessMsg').classList.add('hidden');
+            document.getElementById('depositErrorMsg').classList.add('hidden');
+        }
+
+        function closeDepositPage() {
+            depositPage.classList.add('hidden');
+            mainDashboard.classList.remove('hidden');
+        }
+
+        backFromDepositBtn.addEventListener('click', () => {
+            if (history.state && history.state.page === "deposit") history.back();
+            else closeDepositPage();
+        });
+
         function handleDepositSubmit() {
-            const bankIndex = depositBankSelect.value;
-            const rawAmt = depositAmountInput.value.replace(/,/g, '').trim();
+            const bankIndex = document.getElementById('depositBankSelect').value;
+            const rawAmt = document.getElementById('depositAmountInput').value.replace(/,/g, '').trim();
             const amount = parseFloat(rawAmt);
             const errorMsg = document.getElementById('depositErrorMsg');
             const successMsg = document.getElementById('depositSuccessMsg');
@@ -654,7 +758,6 @@
                 errorMsg.classList.remove('hidden');
                 return;
             }
-
             if (isNaN(amount) || amount <= 0) {
                 errorMsg.textContent = "Please enter a valid amount!";
                 errorMsg.classList.remove('hidden');
@@ -668,6 +771,7 @@
                 return;
             }
 
+            // Deduct Bank, Add Cash
             currentBankBal -= amount;
             bankList[bankIndex].balance = formatNumber(currentBankBal, 2);
 
@@ -676,13 +780,169 @@
             currentCashBalance = formatNumber(currentCash, 2);
 
             successMsg.classList.remove('hidden');
-
             setTimeout(() => {
-                if (history.state && history.state.page === "deposit") {
-                    history.back();
-                } else {
-                    closeDepositPage();
-                }
+                if (history.state && history.state.page === "deposit") history.back();
+                else closeDepositPage();
+            }, 1500);
+        }
+
+        // --- CASH OUT LOGIC ---
+        const cashOutBtn = document.getElementById('cashOutBtn');
+        const cashOutPage = document.getElementById('cashOutPage');
+        const backFromCashOutBtn = document.getElementById('backFromCashOutBtn');
+
+        cashOutBtn.addEventListener('click', () => {
+            history.pushState({ page: "cashOut" }, "", "");
+            openCashOutPage();
+        });
+
+        function openCashOutPage() {
+            mainDashboard.classList.add('hidden');
+            cashOutPage.classList.remove('hidden');
+            
+            const selectEl = document.getElementById('cashOutBankSelect');
+            selectEl.innerHTML = `<option value="">-- Choose Bank / Wallet --</option>`;
+            bankList.forEach((bank, idx) => {
+                selectEl.innerHTML += `<option value="${idx}">${bank.name}</option>`;
+            });
+
+            document.getElementById('cashOutAmountInput').value = "";
+            document.getElementById('cashOutCommissionInput').value = "";
+            document.getElementById('cashOutNameInput').value = "";
+            document.getElementById('cashOutPhoneInput').value = "";
+            document.getElementById('cashOutRemarkInput').value = "";
+            document.getElementById('cashOutSuccessMsg').classList.add('hidden');
+            document.getElementById('cashOutErrorMsg').classList.add('hidden');
+        }
+
+        function closeCashOutPage() {
+            cashOutPage.classList.add('hidden');
+            mainDashboard.classList.remove('hidden');
+        }
+
+        backFromCashOutBtn.addEventListener('click', () => {
+            if (history.state && history.state.page === "cashOut") history.back();
+            else closeCashOutPage();
+        });
+
+        function handleCashOutSubmit() {
+            const bankIndex = document.getElementById('cashOutBankSelect').value;
+            const rawAmt = document.getElementById('cashOutAmountInput').value.replace(/,/g, '').trim();
+            const amount = parseFloat(rawAmt);
+            const errorMsg = document.getElementById('cashOutErrorMsg');
+            const successMsg = document.getElementById('cashOutSuccessMsg');
+
+            errorMsg.classList.add('hidden');
+            successMsg.classList.add('hidden');
+
+            if (bankIndex === "") {
+                errorMsg.textContent = "Please select a bank or wallet!";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+            if (isNaN(amount) || amount <= 0) {
+                errorMsg.textContent = "Please enter a valid amount!";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            let currentCash = parseFloat(currentCashBalance.replace(/,/g, '')) || 0;
+            if (amount > currentCash) {
+                errorMsg.textContent = "Insufficient cash balance!";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            // Deduct Cash, Add Bank
+            currentCash -= amount;
+            currentCashBalance = formatNumber(currentCash, 2);
+
+            let currentBankBal = parseFloat(bankList[bankIndex].balance.replace(/,/g, '')) || 0;
+            currentBankBal += amount;
+            bankList[bankIndex].balance = formatNumber(currentBankBal, 2);
+
+            successMsg.classList.remove('hidden');
+            setTimeout(() => {
+                if (history.state && history.state.page === "cashOut") history.back();
+                else closeCashOutPage();
+            }, 1500);
+        }
+
+        // --- TRANSFER LOGIC ---
+        const transferBtn = document.getElementById('transferBtn');
+        const transferPage = document.getElementById('transferPage');
+        const backFromTransferBtn = document.getElementById('backFromTransferBtn');
+
+        transferBtn.addEventListener('click', () => {
+            history.pushState({ page: "transfer" }, "", "");
+            openTransferPage();
+        });
+
+        function openTransferPage() {
+            mainDashboard.classList.add('hidden');
+            transferPage.classList.remove('hidden');
+            
+            const selectEl = document.getElementById('transferBankSelect');
+            selectEl.innerHTML = `<option value="">-- Choose Bank / Wallet --</option>`;
+            bankList.forEach((bank, idx) => {
+                selectEl.innerHTML += `<option value="${idx}">${bank.name}</option>`;
+            });
+
+            document.getElementById('transferAmountInput').value = "";
+            document.getElementById('transferCommissionInput').value = "";
+            document.getElementById('transferNameInput').value = "";
+            document.getElementById('transferPhoneInput').value = "";
+            document.getElementById('transferRemarkInput').value = "";
+            document.getElementById('transferSuccessMsg').classList.add('hidden');
+            document.getElementById('transferErrorMsg').classList.add('hidden');
+        }
+
+        function closeTransferPage() {
+            transferPage.classList.add('hidden');
+            mainDashboard.classList.remove('hidden');
+        }
+
+        backFromTransferBtn.addEventListener('click', () => {
+            if (history.state && history.state.page === "transfer") history.back();
+            else closeTransferPage();
+        });
+
+        function handleTransferSubmit() {
+            const bankIndex = document.getElementById('transferBankSelect').value;
+            const rawAmt = document.getElementById('transferAmountInput').value.replace(/,/g, '').trim();
+            const amount = parseFloat(rawAmt);
+            const errorMsg = document.getElementById('transferErrorMsg');
+            const successMsg = document.getElementById('transferSuccessMsg');
+
+            errorMsg.classList.add('hidden');
+            successMsg.classList.add('hidden');
+
+            if (bankIndex === "") {
+                errorMsg.textContent = "Please select a bank or wallet!";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+            if (isNaN(amount) || amount <= 0) {
+                errorMsg.textContent = "Please enter a valid amount!";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            let currentBankBal = parseFloat(bankList[bankIndex].balance.replace(/,/g, '')) || 0;
+            if (amount > currentBankBal) {
+                errorMsg.textContent = `Insufficient balance in ${bankList[bankIndex].name}!`;
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            // Deduct Bank Balance for Transfer
+            currentBankBal -= amount;
+            bankList[bankIndex].balance = formatNumber(currentBankBal, 2);
+
+            successMsg.classList.remove('hidden');
+            setTimeout(() => {
+                if (history.state && history.state.page === "transfer") history.back();
+                else closeTransferPage();
             }, 1500);
         }
 
@@ -721,9 +981,7 @@
             });
 
             modal.onclick = function(e) {
-                if (e.target === modal) {
-                    closeConfirmModal();
-                }
+                if (e.target === modal) closeConfirmModal();
             };
         }
 
@@ -731,9 +989,7 @@
             const modal = document.getElementById('confirmModal');
             const modalBox = document.getElementById('confirmModalBox');
             modalBox.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 150);
+            setTimeout(() => { modal.classList.add('hidden'); }, 150);
         }
 
         // --- BACKUP & RESTORE FUNCTIONS ---
@@ -744,9 +1000,7 @@
                 "fas fa-file-export",
                 "bg-emerald-100 text-emerald-600",
                 "bg-emerald-600 hover:bg-emerald-700",
-                () => {
-                    handleExportData();
-                }
+                () => { handleExportData(); }
             );
         }
 
@@ -787,9 +1041,7 @@
                 "fas fa-file-import",
                 "bg-blue-100 text-blue-600",
                 "bg-blue-600 hover:bg-blue-700",
-                () => {
-                    document.getElementById('importFile').click();
-                }
+                () => { document.getElementById('importFile').click(); }
             );
         }
 
@@ -801,7 +1053,6 @@
             reader.onload = function(e) {
                 try {
                     const imported = JSON.parse(e.target.result);
-                    
                     if (imported.settings && imported.banks) {
                         currentSystemPin = imported.settings.pin || currentSystemPin;
                         currentBuyRate = imported.settings.buyRate || currentBuyRate;
@@ -860,9 +1111,7 @@
             msgEl.textContent = msg;
             msgEl.className = `text-xs text-center mt-2 font-bold ${colorClass}`;
             msgEl.classList.remove('hidden');
-            setTimeout(() => {
-                msgEl.classList.add('hidden');
-            }, 3000);
+            setTimeout(() => { msgEl.classList.add('hidden'); }, 3000);
         }
 
         // Login Logic
@@ -873,9 +1122,7 @@
 
             if (pin === currentSystemPin) {
                 loginScreen.classList.add('opacity-0', 'pointer-events-none');
-                setTimeout(() => {
-                    loginScreen.style.display = 'none';
-                }, 300);
+                setTimeout(() => { loginScreen.style.display = 'none'; }, 300);
             } else {
                 errorMsg.classList.remove('hidden');
             }
@@ -885,14 +1132,14 @@
         logoutBtn.addEventListener('click', () => {
             const loginScreen = document.getElementById('loginScreen');
             loginScreen.style.display = 'flex';
-            setTimeout(() => {
-                loginScreen.classList.remove('opacity-0', 'pointer-events-none');
-            }, 10);
+            setTimeout(() => { loginScreen.classList.remove('opacity-0', 'pointer-events-none'); }, 10);
             document.getElementById('pinInput').value = '';
             document.getElementById('loginError').classList.add('hidden');
             document.getElementById('mainDashboard').classList.remove('hidden');
             document.getElementById('settingPage').classList.add('hidden');
             document.getElementById('depositPage').classList.add('hidden');
+            document.getElementById('cashOutPage').classList.add('hidden');
+            document.getElementById('transferPage').classList.add('hidden');
         });
 
         // Profile Modal & Dynamic Name Syncing
@@ -957,7 +1204,6 @@
         const stepPinBackBtn = document.getElementById('stepPinBackBtn');
         const stepBtnText = document.getElementById('stepBtnText');
 
-        // Setting ထဲသို့ ဝင်ရောက်ခြင်း (Back Key သုံးနိုင်ရန် history ပေါင်းထည့်သည်)
         settingBtn.addEventListener('click', () => {
             history.pushState({ page: "setting" }, "", "");
             openSettingPage();
@@ -981,7 +1227,6 @@
             bankNameInput.value = '';
             renderBankList();
             
-            // Reset Step PIN Form
             resetStepPinForm();
             rateSaveSuccess.classList.add('hidden');
             commissionSaveSuccess.classList.add('hidden');
@@ -996,20 +1241,15 @@
         }
 
         backToDashboardBtn.addEventListener('click', () => {
-            if (history.state && history.state.page === "setting") {
-                history.back();
-            } else {
-                closeSettingPage();
-            }
+            if (history.state && history.state.page === "setting") history.back();
+            else closeSettingPage();
         });
 
         window.addEventListener('popstate', (event) => {
-            if (settingPage.classList.contains('hidden') === false) {
-                closeSettingPage();
-            }
-            if (depositPage.classList.contains('hidden') === false) {
-                closeDepositPage();
-            }
+            if (settingPage.classList.contains('hidden') === false) closeSettingPage();
+            if (depositPage.classList.contains('hidden') === false) closeDepositPage();
+            if (cashOutPage.classList.contains('hidden') === false) closeCashOutPage();
+            if (transferPage.classList.contains('hidden') === false) closeTransferPage();
         });
 
         function handleSaveExchangeRate() {
@@ -1135,11 +1375,8 @@
                 stepPinBackBtn.classList.add('hidden');
 
                 setTimeout(() => {
-                    if (history.state && history.state.page === "setting") {
-                        history.back();
-                    } else {
-                        closeSettingPage();
-                    }
+                    if (history.state && history.state.page === "setting") history.back();
+                    else closeSettingPage();
                 }, 1500);
             }
         }
