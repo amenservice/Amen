@@ -99,7 +99,7 @@
             </div>
         </header>
 
-        <!-- Main Dashboard Actions (Grid Layout 2x4 - ဖုန်းစခရင်တိုင်းတွင် ကွက်တိဖြစ်စေရန် h-full နှင့် min-h-0 သုံးထားသည်) -->
+        <!-- Main Dashboard Actions (Grid Layout 2x4) -->
         <main id="mainDashboard" class="flex-1 flex flex-col p-3.5 justify-between min-h-0 overflow-hidden">
             <h2 class="text-gray-500 text-[11px] font-bold uppercase tracking-wider mb-2 shrink-0">Main Actions</h2>
             
@@ -737,7 +737,7 @@
             profileModal.classList.add('hidden');
         });
 
-        // Setting Page
+        // Setting Page & Back Key Management
         const settingBtn = document.getElementById('settingBtn');
         const mainDashboard = document.getElementById('mainDashboard');
         const settingPage = document.getElementById('settingPage');
@@ -766,7 +766,13 @@
         const pinChangeError = document.getElementById('pinChangeError');
         const pinChangeSuccess = document.getElementById('pinChangeSuccess');
 
+        // Setting ထဲသို့ ဝင်ရောက်ခြင်း (Back Key သုံးနိုင်ရန် history ပေါင်းထည့်သည်)
         settingBtn.addEventListener('click', () => {
+            history.pushState({ page: "setting" }, "", "");
+            openSettingPage();
+        });
+
+        function openSettingPage() {
             mainDashboard.classList.add('hidden');
             settingPage.classList.remove('hidden');
             
@@ -794,11 +800,27 @@
             fixedSaveSuccess.classList.add('hidden');
             bankSaveSuccess.classList.add('hidden');
             document.getElementById('backupMsg').classList.add('hidden');
-        });
+        }
 
-        backToDashboardBtn.addEventListener('click', () => {
+        function closeSettingPage() {
             settingPage.classList.add('hidden');
             mainDashboard.classList.remove('hidden');
+        }
+
+        backToDashboardBtn.addEventListener('click', () => {
+            // Back button နှိပ်လိုက်သကဲ့သို့ history ကို უკဆုတ်ပေးရန်
+            if (history.state && history.state.page === "setting") {
+                history.back();
+            } else {
+                closeSettingPage();
+            }
+        });
+
+        // ဖုန်း၏ Back Key (သို့) Browser Back Button နှိပ်လိုက်သောအခါ
+        window.addEventListener('popstate', (event) => {
+            if (settingPage.classList.contains('hidden') === false) {
+                closeSettingPage();
+            }
         });
 
         function handleSaveExchangeRate() {
@@ -877,8 +899,11 @@
             pinChangeSuccess.classList.remove('hidden');
 
             setTimeout(() => {
-                settingPage.classList.add('hidden');
-                mainDashboard.classList.remove('hidden');
+                if (history.state && history.state.page === "setting") {
+                    history.back();
+                } else {
+                    closeSettingPage();
+                }
             }, 1500);
         }
     </script>
