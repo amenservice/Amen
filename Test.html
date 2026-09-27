@@ -137,7 +137,7 @@
                 </button>
 
                 <!-- 5. MMK to THB -->
-                <button class="btn-active bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center transition h-full min-h-0">
+                <button id="mmkToThbBtn" class="btn-active bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center transition h-full min-h-0 cursor-pointer">
                     <div class="w-9 h-9 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-sm mb-1 shadow-sm shrink-0"><i class="fas fa-sync-alt"></i></div>
                     <h3 class="text-xs font-bold text-gray-800 leading-tight">MMK to THB</h3>
                     <p class="text-[9px] text-gray-400 mt-0.5">Exchange rate</p>
@@ -403,6 +403,68 @@
                     <button type="submit" class="btn-active w-full bg-purple-600 text-white font-bold rounded-xl p-3 mt-2 transition text-sm flex items-center justify-center space-x-2 shadow-lg shadow-purple-600/20">
                         <i class="fas fa-check-circle"></i>
                         <span>Confirm THB to MMK</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 6.5 MMK TO THB PAGE (Manual Input & Balance Update) -->
+        <div id="mmkToThbPage" class="flex-1 flex flex-col p-4 overflow-y-auto no-scrollbar hidden bg-gray-50">
+            <div class="flex items-center justify-between mb-4 shrink-0">
+                <div class="flex items-center space-x-2">
+                    <button id="backFromMmkToThbBtn" class="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition shadow-sm">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-gray-800 text-base font-bold">MMK to THB Exchange</h2>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3 pb-4">
+                <form id="mmkToThbForm" class="space-y-3" onsubmit="event.preventDefault(); handleMmkToThbSubmit();">
+                    <!-- Bank / Wallet Select (Cash အမြဲအသေပါမည်) -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Select Bank / Wallet / Cash (MMK လက်ခံမည့်နေရာ)</label>
+                        <select id="mmkToThbBankSelect" required class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition">
+                            <option value="">-- Choose Bank / Cash --</option>
+                        </select>
+                    </div>
+
+                    <!-- MMK Amount (Manual Input) -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">MMK Amount (ရရှိမည့် ကျပ်ငွေ)</label>
+                        <input type="text" id="mmkToThbMmkAmountInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="0" onblur="formatInputAmount(this, 2)">
+                    </div>
+
+                    <!-- THB Amount (Manual Input) -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">THB Amount (ထုတ်ပေးရမည့် ဘတ်ငွေ)</label>
+                        <input type="text" id="mmkToThbThbAmountInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="0" onblur="formatInputAmount(this, 2)">
+                    </div>
+
+                    <!-- Customer Name -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Customer Name</label>
+                        <input type="text" id="mmkToThbNameInput" required inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Enter name">
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Phone Number</label>
+                        <input type="tel" id="mmkToThbPhoneInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="09xxxxxxxxx">
+                    </div>
+
+                    <!-- Remark -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Remark (Optional)</label>
+                        <input type="text" id="mmkToThbRemarkInput" inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Note here">
+                    </div>
+
+                    <div id="mmkToThbSuccessMsg" class="text-green-600 text-xs text-center hidden font-bold">MMK to THB transaction successful! Balances updated.</div>
+                    <div id="mmkToThbErrorMsg" class="text-red-500 text-xs text-center hidden font-bold"></div>
+
+                    <button type="submit" class="btn-active w-full bg-orange-600 text-white font-bold rounded-xl p-3 mt-2 transition text-sm flex items-center justify-center space-x-2 shadow-lg shadow-orange-600/20">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Confirm MMK to THB</span>
                     </button>
                 </form>
             </div>
@@ -1114,6 +1176,98 @@
             }, 1500);
         }
 
+        // --- MMK TO THB LOGIC (Balance Auto Update) ---
+        const mmkToThbBtn = document.getElementById('mmkToThbBtn');
+        const mmkToThbPage = document.getElementById('mmkToThbPage');
+        const backFromMmkToThbBtn = document.getElementById('backFromMmkToThbBtn');
+
+        mmkToThbBtn.addEventListener('click', () => {
+            history.pushState({ page: "mmkToThb" }, "", "");
+            openMmkToThbPage();
+        });
+
+        function openMmkToThbPage() {
+            mainDashboard.classList.add('hidden');
+            mmkToThbPage.classList.remove('hidden');
+            
+            const selectEl = document.getElementById('mmkToThbBankSelect');
+            selectEl.innerHTML = `<option value="cash">Cash (ငွေသား)</option>`;
+            bankList.forEach((bank, idx) => {
+                selectEl.innerHTML += `<option value="${idx}">${bank.name}</option>`;
+            });
+
+            document.getElementById('mmkToThbMmkAmountInput').value = "";
+            document.getElementById('mmkToThbThbAmountInput').value = "";
+            document.getElementById('mmkToThbNameInput').value = "";
+            document.getElementById('mmkToThbPhoneInput').value = "";
+            document.getElementById('mmkToThbRemarkInput').value = "";
+            document.getElementById('mmkToThbSuccessMsg').classList.add('hidden');
+            document.getElementById('mmkToThbErrorMsg').classList.add('hidden');
+        }
+
+        function closeMmkToThbPage() {
+            mmkToThbPage.classList.add('hidden');
+            mainDashboard.classList.remove('hidden');
+        }
+
+        backFromMmkToThbBtn.addEventListener('click', () => {
+            if (history.state && history.state.page === "mmkToThb") history.back();
+            else closeMmkToThbPage();
+        });
+
+        function handleMmkToThbSubmit() {
+            const selectedVal = document.getElementById('mmkToThbBankSelect').value;
+            const rawMmk = document.getElementById('mmkToThbMmkAmountInput').value.replace(/,/g, '').trim();
+            const rawThb = document.getElementById('mmkToThbThbAmountInput').value.replace(/,/g, '').trim();
+            const mmkAmt = parseFloat(rawMmk);
+            const thbAmt = parseFloat(rawThb);
+            
+            const errorMsg = document.getElementById('mmkToThbErrorMsg');
+            const successMsg = document.getElementById('mmkToThbSuccessMsg');
+
+            errorMsg.classList.add('hidden');
+            successMsg.classList.add('hidden');
+
+            if (selectedVal === "") {
+                errorMsg.textContent = "Please select Cash or Bank!";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+            if (isNaN(mmkAmt) || mmkAmt <= 0 || isNaN(thbAmt) || thbAmt <= 0) {
+                errorMsg.textContent = "Please enter valid MMK and THB amounts!";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            // 1. THB ဘက်ခြမ်း စစ်ဆေးခြင်းနှင့် နှုတ်ယူခြင်း (THB Balance မှ ပေးချေရမည်)
+            let currentThb = parseFloat(currentThbBalance.replace(/,/g, '')) || 0;
+            if (thbAmt > currentThb) {
+                errorMsg.textContent = "Insufficient THB balance to pay THB!";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+            currentThb -= thbAmt;
+            currentThbBalance = formatNumber(currentThb, 2);
+
+            // 2. MMK ဘက်ခြမ်း တိုးလာခြင်း (Cash သို့မဟုတ် သက်ဆိုင်ရာဘဏ်သို့ ထည့်သွင်းခြင်း)
+            if (selectedVal === "cash") {
+                let currentCash = parseFloat(currentCashBalance.replace(/,/g, '')) || 0;
+                currentCash += mmkAmt;
+                currentCashBalance = formatNumber(currentCash, 2);
+            } else {
+                let bankIdx = parseInt(selectedVal);
+                let currentBankBal = parseFloat(bankList[bankIdx].balance.replace(/,/g, '')) || 0;
+                currentBankBal += mmkAmt;
+                bankList[bankIdx].balance = formatNumber(currentBankBal, 2);
+            }
+
+            successMsg.classList.remove('hidden');
+            setTimeout(() => {
+                if (history.state && history.state.page === "mmkToThb") history.back();
+                else closeMmkToThbPage();
+            }, 1500);
+        }
+
         // --- YES / NO CONFIRM MODAL CONTROLLER (ENGLISH ONLY) ---
         function showConfirmModal(title, desc, iconClass, iconBgColor, yesBtnColorClass, onYesCallback) {
             const modal = document.getElementById('confirmModal');
@@ -1309,6 +1463,7 @@
             document.getElementById('cashOutPage').classList.add('hidden');
             document.getElementById('transferPage').classList.add('hidden');
             document.getElementById('thbToMmkPage').classList.add('hidden');
+            document.getElementById('mmkToThbPage').classList.add('hidden');
         });
 
         // Profile Modal & Dynamic Name Syncing
@@ -1420,6 +1575,7 @@
             if (cashOutPage.classList.contains('hidden') === false) closeCashOutPage();
             if (transferPage.classList.contains('hidden') === false) closeTransferPage();
             if (thbToMmkPage.classList.contains('hidden') === false) closeThbToMmkPage();
+            if (mmkToThbPage.classList.contains('hidden') === false) closeMmkToThbPage();
         });
 
         function handleSaveExchangeRate() {
