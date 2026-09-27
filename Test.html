@@ -280,7 +280,7 @@
             </div>
         </div>
 
-        <!-- 5. TRANSFER PAGE -->
+        <!-- 5. TRANSFER PAGE (အမည်နှစ်ကွက်၊ ဖုန်းနံပါတ်နှစ်ကွက်) -->
         <div id="transferPage" class="flex-1 flex flex-col p-4 overflow-y-auto no-scrollbar hidden bg-gray-50">
             <div class="flex items-center justify-between mb-4 shrink-0">
                 <div class="flex items-center space-x-2">
@@ -310,14 +310,28 @@
                         <input type="text" id="transferCommissionInput" inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition bg-gray-100" placeholder="0.00" readonly>
                     </div>
 
+                    <!-- 1. Sender Name -->
                     <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">Customer Name</label>
-                        <input type="text" id="transferNameInput" required inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Enter name">
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Sender Name (လွှဲသူနာမည်)</label>
+                        <input type="text" id="transferSenderNameInput" required inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Enter sender name">
                     </div>
 
+                    <!-- 2. Sender Phone -->
                     <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">Phone Number</label>
-                        <input type="tel" id="transferPhoneInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="09xxxxxxxxx">
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Sender Phone No. (လွှဲသူဖုန်းနံပါတ်)</label>
+                        <input type="tel" id="transferSenderPhoneInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="09xxxxxxxxx">
+                    </div>
+
+                    <!-- 3. Receiver Name -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Receiver Name (လက်ခံသူနာမည်)</label>
+                        <input type="text" id="transferReceiverNameInput" required inputmode="text" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Enter receiver name">
+                    </div>
+
+                    <!-- 4. Receiver Phone -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Receiver Phone No. (လက်ခံသူဖုန်းနံပါတ်)</label>
+                        <input type="tel" id="transferReceiverPhoneInput" required inputmode="numeric" pattern="[0-9]*" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="09xxxxxxxxx">
                     </div>
 
                     <div>
@@ -771,7 +785,6 @@
                 return;
             }
 
-            // Deduct Bank, Add Cash
             currentBankBal -= amount;
             bankList[bankIndex].balance = formatNumber(currentBankBal, 2);
 
@@ -853,7 +866,6 @@
                 return;
             }
 
-            // Deduct Cash, Add Bank
             currentCash -= amount;
             currentCashBalance = formatNumber(currentCash, 2);
 
@@ -890,8 +902,10 @@
 
             document.getElementById('transferAmountInput').value = "";
             document.getElementById('transferCommissionInput').value = "";
-            document.getElementById('transferNameInput').value = "";
-            document.getElementById('transferPhoneInput').value = "";
+            document.getElementById('transferSenderNameInput').value = "";
+            document.getElementById('transferSenderPhoneInput').value = "";
+            document.getElementById('transferReceiverNameInput').value = "";
+            document.getElementById('transferReceiverPhoneInput').value = "";
             document.getElementById('transferRemarkInput').value = "";
             document.getElementById('transferSuccessMsg').classList.add('hidden');
             document.getElementById('transferErrorMsg').classList.add('hidden');
@@ -935,7 +949,6 @@
                 return;
             }
 
-            // Deduct Bank Balance for Transfer
             currentBankBal -= amount;
             bankList[bankIndex].balance = formatNumber(currentBankBal, 2);
 
