@@ -440,9 +440,8 @@
 
         let transactionHistory = [];
 
-        // Step PIN variables
+        // Step PIN variables (3 Steps: 1. Current PIN, 2. New PIN, 3. Confirm New PIN)
         let pinStep = 1;
-        let tempOldPin = "";
         let tempNewPin = "";
 
         function formatNumber(value, decimals = 2) {
@@ -875,10 +874,9 @@
             }
         }
 
-        // --- STEP BY STEP PIN LOGIC ---
+        // --- STEP BY STEP PIN LOGIC (3 Steps) ---
         function resetStepPinForm() {
             pinStep = 1;
-            tempOldPin = "";
             tempNewPin = "";
             stepPinInput.value = "";
             stepPinError.classList.add('hidden');
@@ -897,15 +895,11 @@
                 stepBtnText.textContent = "Next";
                 stepPinBackBtn.classList.add('hidden');
             } else if (pinStep === 2) {
-                stepInstruction.textContent = "Step 2: Confirm Current PIN";
-                stepBtnText.textContent = "Verify";
-                stepPinBackBtn.classList.remove('hidden');
-            } else if (pinStep === 3) {
-                stepInstruction.textContent = "Step 3: Enter New PIN";
+                stepInstruction.textContent = "Step 2: Enter New PIN";
                 stepBtnText.textContent = "Next";
                 stepPinBackBtn.classList.remove('hidden');
-            } else if (pinStep === 4) {
-                stepInstruction.textContent = "Step 4: Confirm New PIN";
+            } else if (pinStep === 3) {
+                stepInstruction.textContent = "Step 3: Confirm New PIN";
                 stepBtnText.textContent = "Update PIN";
                 stepPinBackBtn.classList.remove('hidden');
             }
@@ -929,22 +923,21 @@
             }
 
             if (pinStep === 1) {
-                tempOldPin = val;
-                pinStep = 2;
-                updateStepUI();
-            } else if (pinStep === 2) {
-                if (val !== currentSystemPin || val !== tempOldPin) {
+                // Check Current PIN
+                if (val !== currentSystemPin) {
                     stepPinError.textContent = "Incorrect Current PIN!";
                     stepPinError.classList.remove('hidden');
                     return;
                 }
+                pinStep = 2;
+                updateStepUI();
+            } else if (pinStep === 2) {
+                // Save New PIN temporarily
+                tempNewPin = val;
                 pinStep = 3;
                 updateStepUI();
             } else if (pinStep === 3) {
-                tempNewPin = val;
-                pinStep = 4;
-                updateStepUI();
-            } else if (pinStep === 4) {
+                // Confirm New PIN
                 if (val !== tempNewPin) {
                     stepPinError.textContent = "New PIN and Confirm PIN do not match!";
                     stepPinError.classList.remove('hidden');
