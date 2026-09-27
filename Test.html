@@ -111,7 +111,7 @@
             
             <div class="grid grid-cols-2 gap-2 flex-1 min-h-0 w-full pb-1">
                 <!-- 1. Cash In -->
-                <button class="btn-active bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center transition h-full min-h-0">
+                <button id="cashInBtn" class="btn-active bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center transition h-full min-h-0 cursor-pointer">
                     <div class="w-9 h-9 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm mb-1 shadow-sm shrink-0"><i class="fas fa-arrow-down"></i></div>
                     <h3 class="text-xs font-bold text-gray-800 leading-tight">Cash In</h3>
                     <p class="text-[9px] text-gray-400 mt-0.5">Deposit funds</p>
@@ -168,7 +168,69 @@
             </div>
         </main>
 
-        <!-- 3. SETTING PAGE -->
+        <!-- 3. DEPOSIT (CASH IN) PAGE -->
+        <div id="depositPage" class="flex-1 flex flex-col p-4 overflow-y-auto no-scrollbar hidden bg-gray-50">
+            <div class="flex items-center justify-between mb-4 shrink-0">
+                <div class="flex items-center space-x-2">
+                    <button id="backFromDepositBtn" class="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition shadow-sm">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-gray-800 text-base font-bold">Cash In (Deposit)</h2>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3 pb-4">
+                <form id="depositForm" class="space-y-3" onsubmit="event.preventDefault(); handleDepositSubmit();">
+                    <!-- Select Bank / Wallet -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Select Bank / Wallet</label>
+                        <select id="depositBankSelect" required class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition">
+                            <option value="">-- Choose Bank / Wallet --</option>
+                        </select>
+                    </div>
+
+                    <!-- Amount -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Amount (MMK)</label>
+                        <input type="text" id="depositAmountInput" required class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="0.00" oninput="calculateCommission()" onblur="formatInputAmount(this, 2)">
+                    </div>
+
+                    <!-- Commission -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Commission (MMK)</label>
+                        <input type="text" id="depositCommissionInput" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition bg-gray-100" placeholder="0.00" readonly>
+                    </div>
+
+                    <!-- Customer Name -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Customer Name</label>
+                        <input type="text" id="depositNameInput" required class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Enter name">
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Phone Number</label>
+                        <input type="tel" id="depositPhoneInput" required class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="09xxxxxxxxx">
+                    </div>
+
+                    <!-- Remark -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Remark (Optional)</label>
+                        <input type="text" id="depositRemarkInput" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition" placeholder="Note here">
+                    </div>
+
+                    <div id="depositSuccessMsg" class="text-green-600 text-xs text-center hidden font-bold">Deposit successful! Balances updated.</div>
+                    <div id="depositErrorMsg" class="text-red-500 text-xs text-center hidden font-bold"></div>
+
+                    <button type="submit" class="btn-active w-full bg-green-600 text-white font-bold rounded-xl p-3 mt-2 transition text-sm flex items-center justify-center space-x-2 shadow-lg shadow-green-600/20">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Confirm Deposit</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 4. SETTING PAGE -->
         <div id="settingPage" class="flex-1 flex flex-col p-4 overflow-y-auto no-scrollbar hidden bg-gray-50">
             <div class="flex items-center justify-between mb-4 shrink-0">
                 <div class="flex items-center space-x-2">
@@ -358,7 +420,7 @@
             </div>
         </div>
 
-        <!-- Footer (နောက်တစ်ဆ ပိုထင်ရှားကြီးမားစေရန် h-11 နှင့် text-xs သို့ တိုးမြှင့်ထားသည်) -->
+        <!-- Footer -->
         <footer class="bg-blue-600 text-blue-100 shrink-0 h-11 flex items-center justify-center text-xs font-semibold shadow-[0_-3px_12px_rgba(0,0,0,0.15)] tracking-wide">
             <span>&copy; 2026 AMEN. All rights reserved.</span>
         </footer>
@@ -507,6 +569,124 @@
                     renderBankList();
                 }
             );
+        }
+
+        // --- DEPOSIT PAGE & LOGIC ---
+        const cashInBtn = document.getElementById('cashInBtn');
+        const depositPage = document.getElementById('depositPage');
+        const backFromDepositBtn = document.getElementById('backFromDepositBtn');
+        const depositBankSelect = document.getElementById('depositBankSelect');
+        const depositAmountInput = document.getElementById('depositAmountInput');
+        const depositCommissionInput = document.getElementById('depositCommissionInput');
+
+        cashInBtn.addEventListener('click', () => {
+            history.pushState({ page: "deposit" }, "", "");
+            openDepositPage();
+        });
+
+        function openDepositPage() {
+            mainDashboard.classList.add('hidden');
+            depositPage.classList.remove('hidden');
+            
+            // Populate Bank Select Options
+            depositBankSelect.innerHTML = `<option value="">-- Choose Bank / Wallet --</option>`;
+            bankList.forEach((bank, idx) => {
+                depositBankSelect.innerHTML += `<option value="${idx}">${bank.name} (Bal: ${bank.balance})</option>`;
+            });
+
+            depositAmountInput.value = "";
+            depositCommissionInput.value = "";
+            document.getElementById('depositNameInput').value = "";
+            document.getElementById('depositPhoneInput').value = "";
+            document.getElementById('depositRemarkInput').value = "";
+            document.getElementById('depositSuccessMsg').classList.add('hidden');
+            document.getElementById('depositErrorMsg').classList.add('hidden');
+        }
+
+        function closeDepositPage() {
+            depositPage.classList.add('hidden');
+            mainDashboard.classList.remove('hidden');
+        }
+
+        backFromDepositBtn.addEventListener('click', () => {
+            if (history.state && history.state.page === "deposit") {
+                history.back();
+            } else {
+                closeDepositPage();
+            }
+        });
+
+        function calculateCommission() {
+            let rawAmt = depositAmountInput.value.replace(/,/g, '').trim();
+            let amount = parseFloat(rawAmt);
+            if (isNaN(amount) || amount <= 0) {
+                depositCommissionInput.value = "";
+                return;
+            }
+
+            let minAmt = parseFloat(currentMinAmount.replace(/,/g, '')) || 0;
+            let maxAmt = parseFloat(currentMaxAmount.replace(/,/g, '')) || 1;
+            let startRate = parseFloat(currentStartRate) || 0;
+            let endRate = parseFloat(currentEndRate) || 0;
+
+            // Simple proportional rate calculation between startRate and endRate based on amount range
+            let ratio = (amount - minAmt) / (maxAmt - minAmt);
+            if (ratio < 0) ratio = 0;
+            if (ratio > 1) ratio = 1;
+            
+            let ratePercent = startRate + (endRate - startRate) * ratio;
+            let commission = amount * (ratePercent / 100);
+
+            depositCommissionInput.value = formatNumber(commission, 2);
+        }
+
+        function handleDepositSubmit() {
+            const bankIndex = depositBankSelect.value;
+            const rawAmt = depositAmountInput.value.replace(/,/g, '').trim();
+            const amount = parseFloat(rawAmt);
+            const errorMsg = document.getElementById('depositErrorMsg');
+            const successMsg = document.getElementById('depositSuccessMsg');
+
+            errorMsg.classList.add('hidden');
+            successMsg.classList.add('hidden');
+
+            if (bankIndex === "") {
+                errorMsg.textContent = "Please select a bank or wallet!";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            if (isNaN(amount) || amount <= 0) {
+                errorMsg.textContent = "Please enter a valid amount!";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            // Check Bank Balance
+            let currentBankBal = parseFloat(bankList[bankIndex].balance.replace(/,/g, '')) || 0;
+            if (amount > currentBankBal) {
+                errorMsg.textContent = `Insufficient balance in ${bankList[bankIndex].name}!`;
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            // Deduct from Bank Balance & Add to Cash Balance
+            currentBankBal -= amount;
+            bankList[bankIndex].balance = formatNumber(currentBankBal, 2);
+
+            let currentCash = parseFloat(currentCashBalance.replace(/,/g, '')) || 0;
+            currentCash += amount;
+            currentCashBalance = formatNumber(currentCash, 2);
+
+            successMsg.classList.remove('hidden');
+
+            setTimeout(() => {
+                if (history.state && history.state.page === "deposit") {
+                    history.back();
+                } else {
+                    closeDepositPage();
+                }
+            }, 1500);
         }
 
         // --- YES / NO CONFIRM MODAL CONTROLLER (ENGLISH ONLY) ---
@@ -715,6 +895,7 @@
             document.getElementById('loginError').classList.add('hidden');
             document.getElementById('mainDashboard').classList.remove('hidden');
             document.getElementById('settingPage').classList.add('hidden');
+            document.getElementById('depositPage').classList.add('hidden');
         });
 
         // Profile Modal & Dynamic Name Syncing
@@ -828,6 +1009,9 @@
         window.addEventListener('popstate', (event) => {
             if (settingPage.classList.contains('hidden') === false) {
                 closeSettingPage();
+            }
+            if (depositPage.classList.contains('hidden') === false) {
+                closeDepositPage();
             }
         });
 
